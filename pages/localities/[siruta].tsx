@@ -1,38 +1,47 @@
-import {
-  Box,
-  Grid,
-  Theme,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Grid, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
 import type { NextPage } from "next";
 import React, { useCallback, useEffect, useState } from "react";
-import SearchAppBar from "../components/SearchAppBar";
-import styles from "../styles/Home.module.css";
-import { Head } from "../components/Head";
-import Data from "../data/octombrie.json";
-import { TrackedLocalitiesSlider } from "../components/TrackedLocalitiesSlider";
-import SearchInput from "../components/SearchInput";
-import LocalitiesByIncidence from "../components/LocalitiesByIncidence";
+import SearchAppBar from "../../components/SearchAppBar";
+/* import styles from "../styles/Home.module.css"; */
+import { Head } from "../../components/Head";
+import SearchInput from "../../components/SearchInput";
 import { SxProps } from "@mui/system";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCoffee,
-  faHandHoldingHeart,
   faHandPaper,
-  faHandPeace,
   faHeart,
-  faMugHot,
 } from "@fortawesome/free-solid-svg-icons";
+import LocalitySummaryWidget from "../../components/LocalitySummaryWidget";
+import { useRouter } from "next/dist/client/router";
+import { Locality, LocalityWithFeature } from "../../types/Locality";
+import { labelForLocality } from "../../lib/labelForLocality";
+import SimpleLineChart from "../../components/SimpleLineChart";
 
-const Home: NextPage = () => {
+const LocalityPage: NextPage = () => {
+  const [locality, setLocality] = useState<LocalityWithFeature>();
+
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  const matches = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const sortedUATs = Data.sort(
-    (a, b) => b.data["2021-10-14"] - a.data["2021-10-14"]
-  );
+  const router = useRouter();
+  const { siruta } = router.query;
+
+  console.log("sir", siruta, router.query);
+
+  const fetchLocality = useCallback(async () => {
+    if (!siruta) {
+      return;
+    }
+
+    const response = await fetch(`/api/bySiruta?code=${siruta}`);
+    const json = await response.json();
+    setLocality(json);
+  }, [siruta]);
+
+  useEffect(() => {
+    fetchLocality();
+  }, [siruta]);
 
   const headlineSx: SxProps<Theme> = {
     textTransform: "uppercase",
@@ -50,7 +59,7 @@ const Home: NextPage = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div>
       <Head />
 
       <SearchAppBar />
@@ -77,36 +86,24 @@ const Home: NextPage = () => {
           },
         }}
       >
-        <SearchInput />
+        <Box sx={{ position: "relative" }}>
+          <SearchInput />
+        </Box>
       </Box>
-      <main className={styles.main}>
-        {/* <TrackedLocalitiesSlider /> */}
-        <Grid container spacing={2} xs={12} lg={8} sx={{ margin: "0 auto" }}>
-          <Grid item xs={12}>
-            <Typography variant="h1" sx={headlineSx}>
-              Peste 7,5‰
-            </Typography>
-            <LocalitiesByIncidence low={7.5} high={1000} />
+      <main>
+        {locality && (
+          <Grid container spacing={2} xs={12} lg={8} sx={{ margin: "0 auto" }}>
+            <Grid item xs={12}>
+              <Typography variant="h1" sx={headlineSx}>
+                {labelForLocality(locality)}
+              </Typography>
+              <Box sx={{ maxHeight: "100px", height: "100px" }}>
+                <SimpleLineChart series={locality.data} />
+              </Box>
+              <LocalitySummaryWidget locality={locality} />
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h1" sx={headlineSx}>
-              Între 6‰ și 7,5‰
-            </Typography>
-            <LocalitiesByIncidence low={6} high={7.5} />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h1" sx={headlineSx}>
-              Între 3‰ și 6‰
-            </Typography>
-            <LocalitiesByIncidence low={3} high={6} />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h1" sx={headlineSx}>
-              Sub 3‰
-            </Typography>
-            <LocalitiesByIncidence low={0} high={3} />
-          </Grid>
-        </Grid>
+        )}
       </main>
       <footer
         style={{
@@ -153,4 +150,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default LocalityPage;
