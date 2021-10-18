@@ -86,9 +86,7 @@ const LocalityPage: NextPage = () => {
           },
         }}
       >
-        <Box sx={{ position: "relative" }}>
           <SearchInput />
-        </Box>
       </Box>
       <main>
         {locality && (
@@ -97,9 +95,6 @@ const LocalityPage: NextPage = () => {
               <Typography variant="h1" sx={headlineSx}>
                 {labelForLocality(locality)}
               </Typography>
-              <Box sx={{ maxHeight: "100px", height: "100px" }}>
-                <SimpleLineChart series={locality.data} />
-              </Box>
               <LocalitySummaryWidget locality={locality} />
             </Grid>
           </Grid>
