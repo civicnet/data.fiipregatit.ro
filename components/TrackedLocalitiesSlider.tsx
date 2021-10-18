@@ -55,7 +55,7 @@ export function TrackedLocalitiesSlider() {
     });
   };
 
-  const localities = trackedLocalities.length
+  const localities = []; /* trackedLocalities.length
     ? trackedLocalities.map((locality) => {
         const needle = Data.find((l) => l.siruta === locality.siruta);
 
@@ -67,7 +67,7 @@ export function TrackedLocalitiesSlider() {
 
         return <LocalityRateWidget locality={needle} key={locality.siruta} />;
       })
-    : [];
+    : []; */
 
   if (!localities.length) {
     return null;
