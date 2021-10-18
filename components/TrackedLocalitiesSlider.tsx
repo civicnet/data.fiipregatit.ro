@@ -55,7 +55,7 @@ export function TrackedLocalitiesSlider() {
     });
   };
 
-  const localities = []; /* trackedLocalities.length
+  const localities: never[] = []; /* trackedLocalities.length
     ? trackedLocalities.map((locality) => {
         const needle = Data.find((l) => l.siruta === locality.siruta);
 
