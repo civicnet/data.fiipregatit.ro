@@ -1,11 +1,12 @@
 import "../styles/globals.css";
-import type { AppProps } from "next/app";
+import type { AppProps, NextWebVitalsMetric } from "next/app";
 import React, { useEffect } from "react";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { RecoilRoot } from "recoil";
 import { DebugObserver } from "../components/DebugObserver";
 import { useRouter } from 'next/router'
 import { logPageview } from "../lib/ga/logPageview";
+import { WindowWithGA } from "../lib/ga/WindowWithGA";
 
 const theme = createTheme({
   palette: {
@@ -39,6 +40,16 @@ const theme = createTheme({
     },
   },
 });
+
+export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric) {
+  (window as WindowWithGA).gtag('event', name, {
+    event_category:
+      label === 'web-vital' ? 'Web Vitals' : 'Next.js custom metric',
+    value: Math.round(name === 'CLS' ? value * 1000 : value), 
+    event_label: id, 
+    non_interaction: true, 
+  })
+}
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();

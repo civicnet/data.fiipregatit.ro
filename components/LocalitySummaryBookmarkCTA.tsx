@@ -26,6 +26,7 @@ import SimpleLineChart from "./SimpleLineChart";
 import { linearRegression } from "simple-statistics";
 import {
   BookmarkAdd,
+  BookmarkAddOutlined,
   MyLocationOutlined,
   Refresh,
   TrendingDown,
@@ -175,7 +176,7 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
           <MyLocationOutlined />
         </IconButton>
         <IconButton onClick={fetchRandom} sx={{ ml: "auto" }}>
-          <BookmarkAdd />
+          <BookmarkAddOutlined />
         </IconButton>
       </CardActions>
     </Card>

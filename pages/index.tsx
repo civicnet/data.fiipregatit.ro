@@ -28,8 +28,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import LocalitySummaryBookmarkCTA from "../components/LocalitySummaryBookmarkCTA";
 import dynamic from "next/dynamic";
+import { CovidMapLayers } from "../components/CovidMap";
+import { BookmarkAdd, BookmarkAddOutlined } from "@mui/icons-material";
 
-const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), { ssr : false, loading: ()=> <Skeleton height="100%" /> });
+const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
+  ssr: false,
+  loading: () => <Skeleton height="100%" />,
+});
 
 const Home: NextPage = () => {
   const theme = useTheme();
@@ -87,7 +92,7 @@ const Home: NextPage = () => {
       </Box>
       <main className={styles.main}>
         <Grid container justifyContent="center">
-          <Grid item xs={8} lg={6} xl={5}>
+          <Grid item xs={11} lg={6} xl={5}>
             <Grid
               container
               justifyContent="space-between"
@@ -95,7 +100,7 @@ const Home: NextPage = () => {
                 mt: 8,
               }}
             >
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{ mb: { xs: theme.spacing(3) }}}>
                 <Typography
                   variant="h1"
                   sx={{
@@ -112,6 +117,7 @@ const Home: NextPage = () => {
                     },
                   }}
                 >
+                  <BookmarkAddOutlined sx={{ mr: 2 }} />
                   Marchează localitățile de interes personal pentru access ușor
                   mai târziu
                 </Typography>
@@ -136,27 +142,28 @@ const Home: NextPage = () => {
                 <Typography variant="h1" sx={headlineSx}>
                   Hartă
                 </Typography>
-                <ToggleButtonGroup
-                  value={"uats"}
-                  exclusive
-                  onChange={() => {}}
-                  aria-label="text alignment"
-                  sx={{ mb: 3 }}
-                >
-                  <ToggleButton value="uats" aria-label="left aligned">
-                    <FontAwesomeIcon icon={faTh} />
-                  </ToggleButton>
-                  <ToggleButton value="counties" aria-label="centered">
-                    <FontAwesomeIcon icon={faThLarge} />
-                  </ToggleButton>
-                  <ToggleButton value="labeled" aria-label="right aligned">
-                    <FontAwesomeIcon icon={faFont} />
-                  </ToggleButton>
-                </ToggleButtonGroup>
+                <Box sx={{ mb: 3 }}>
+                  <ToggleButtonGroup
+                    value={"uats"}
+                    exclusive
+                    onChange={() => {}}
+                    aria-label="text alignment"
+                  >
+                    <ToggleButton value="uats" aria-label="left aligned">
+                      <FontAwesomeIcon icon={faTh} />
+                    </ToggleButton>
+                    <ToggleButton value="counties" aria-label="centered">
+                      <FontAwesomeIcon icon={faThLarge} />
+                    </ToggleButton>
+                    <ToggleButton value="labeled" aria-label="right aligned">
+                      <FontAwesomeIcon icon={faFont} />
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </Box>
               </Grid>
               <Grid item xs={12}>
                 <Box sx={{ height: "600px", position: "relative" }}>
-                  <DynamicCovidMap />
+                  <DynamicCovidMap layers={[CovidMapLayers.UATS, CovidMapLayers.COUNTIES ]} />
                 </Box>
               </Grid>
             </Grid>
@@ -210,7 +217,11 @@ const Home: NextPage = () => {
               </Typography>{" "}
               și <FontAwesomeIcon icon={faCoffee} /> de
             </Typography>
-            <img src="/CivicNetLogoNegative.svg" width="150px" height="35.6167px" />
+            <img
+              src="/CivicNetLogoNegative.svg"
+              width="150px"
+              height="35.6167px"
+            />
             <Typography
               sx={{
                 color: "#bbb",

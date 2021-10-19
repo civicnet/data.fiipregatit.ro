@@ -1,6 +1,4 @@
-type WindowWithGA = typeof window & {
-    gtag: (...args: unknown[]) => void; 
-}
+import { WindowWithGA } from "./WindowWithGA";
 
 export const logPageview = (url: string) => {
   (window as WindowWithGA).gtag("config", process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS, {

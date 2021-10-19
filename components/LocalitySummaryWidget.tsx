@@ -25,6 +25,7 @@ import SimpleLineChart from "./SimpleLineChart";
 import { linearRegression } from "simple-statistics";
 import {
   BookmarkAdd,
+  BookmarkAddOutlined,
   Launch,
   Rule,
   TrendingDown,
@@ -112,7 +113,7 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
       </CardContent>
       <CardActions disableSpacing>
         <IconButton>
-          <BookmarkAdd />
+          <BookmarkAddOutlined />
         </IconButton>
         <IconButton href="https://fiipregatit.ro" target="_blank">
           <Rule />

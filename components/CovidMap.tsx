@@ -27,7 +27,21 @@ type HoverInfo<T extends Layers["counties"][0] | Layers["uats"][0]> = {
   y: number;
 };
 
-export default function CovidMap() {
+export enum CovidMapLayers {
+  UATS = "UATS",
+  COUNTIES = "COUNTIES",
+  LABELS = "LABELS",
+}
+
+type Props = {
+  view?: typeof INITIAL_VIEW_STATE;
+  layers?: CovidMapLayers[];
+};
+
+export default function CovidMap({
+  view = INITIAL_VIEW_STATE,
+  layers = [CovidMapLayers.COUNTIES],
+}: Props) {
   const [layersData, setLayersData] = useState<Layers>();
   const [hoverInfo, setHoverInfo] = useState<HoverInfo<Layers["uats"][0]>>();
 
@@ -42,52 +56,49 @@ export default function CovidMap() {
   }, []);
 
   if (!layersData) {
-    return <Skeleton width="100%" height="100%" />;
+    return <Skeleton width="100%" height="100%" sx={{ transform: "unset" }} />;
   }
 
   const domain = chroma
     .scale(Object.values(SeverityLevelColor))
     .domain(layersData ? layersData.countyRange : [0, 0]);
 
-  const layers: unknown[] = [
-    new GeoJsonLayer({
-      id: "counties-layer",
-      data: layersData.counties,
-      pickable: true,
-      stroked: true,
-      filled: true,
-      extruded: false,
-      pointType: "circle",
-      lineWidthScale: 10,
-      lineWidthMinPixels: 1,
-      getFillColor: (d: typeof layersData.counties[0]) => {
-        const hex = SeverityLevelColor[getSeverityLevel(d.properties.rate)];
-        return chroma(hex).rgb();
-      },
-      getLineColor: () => [0, 0, 0, 128],
-      getPointRadius: 100,
-      getLineWidth: 1,
-      getElevation: 30,
-    }),
-    new GeoJsonLayer({
+  const layersToRender: unknown[] = [
+    layers.includes(CovidMapLayers.UATS) && new GeoJsonLayer({
       id: "uats-layer",
       data: layersData.uats,
       pickable: true,
       stroked: true,
       filled: true,
       extruded: false,
-      pointType: "circle",
-      lineWidthScale: 10,
+      lineWidthScale: 5,
       lineWidthMinPixels: 1,
       getFillColor: (d: typeof layersData.uats[0]) => {
         const hex = SeverityLevelColor[getSeverityLevel(d.properties.rate)];
         return chroma(hex).rgb();
       },
-      getLineColor: () => [0, 0, 0, 128],
-      getPointRadius: 100,
+      getLineColor: () => {
+        const opacity = layers.includes(CovidMapLayers.COUNTIES) ? 64 : 128;
+        return [0, 0, 0, opacity];
+      },
       getLineWidth: 1,
-      getElevation: 30,
       onHover: (info: HoverInfo<Layers["uats"][0]>) => setHoverInfo(info),
+    }),
+    layers.includes(CovidMapLayers.COUNTIES) && new GeoJsonLayer({
+      id: "counties-layer",
+      data: layersData.counties,
+      pickable: true,
+      stroked: true,
+      filled: !layers.includes(CovidMapLayers.UATS),
+      extruded: false,
+      lineWidthScale: 10,
+      lineWidthMinPixels: 2,
+      getFillColor: (d: typeof layersData.counties[0]) => {
+        const hex = SeverityLevelColor[getSeverityLevel(d.properties.rate)];
+        return chroma(hex).rgb();
+      },
+      getLineColor: () => [0, 0, 0, 128],
+      getLineWidth: 1,
     }),
   ];
 
@@ -95,7 +106,7 @@ export default function CovidMap() {
     <DeckGL
       initialViewState={INITIAL_VIEW_STATE}
       controller={true}
-      layers={[layers[1]]}
+      layers={layersToRender}
     >
       <StaticMap
         mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}

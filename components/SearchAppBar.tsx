@@ -6,9 +6,10 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
 import HomeIcon from "@mui/icons-material/Home";
-import { Stack } from "@mui/material";
+import { IconButton, Stack, useMediaQuery } from "@mui/material";
 import { useRouter } from "next/dist/client/router";
 import styles from "./SearchAppBar.module.css";
+import { Menu } from "@mui/icons-material";
 
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
@@ -40,6 +41,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function SearchAppBar() {
   const theme = useTheme();
   const router = useRouter();
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
   const goHome = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -53,11 +55,12 @@ export default function SearchAppBar() {
         sx={{ pt: theme.spacing(2), pb: theme.spacing(2) }}
       >
         <Toolbar>
-          <img src="/Logo_DSU.svg" height="70" width="70" />
+          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            <img src="/Logo_DSU.svg" height="70" width="70" />
+          </Box>
           <Box
             sx={{
               flexGrow: 1,
-              display: { xs: "none", sm: "block" },
               ml: theme.spacing(2),
             }}
           >
@@ -85,21 +88,26 @@ export default function SearchAppBar() {
               Platforma națională de date deschise pentru situații de urgență
             </Typography>
           </Box>
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{ alignContent: "center", mr: 3, mb: "-46px" }}
-          >
-            <a href="/" onClick={goHome} className={styles.navItem}>
-              <HomeIcon />
-            </a>
-            <a href="#" className={styles.navItem}>
-              Hartă
-            </a>
-            <a href="#" className={styles.navItem}>
-              fiipregatit.ro
-            </a>
-          </Stack>
+          {!matches && (
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{ alignContent: "center", mr: 3, mb: "-46px" }}
+            >
+              <a href="/" onClick={goHome} className={styles.navItem}>
+                <HomeIcon />
+              </a>
+              <a href="#" className={styles.navItem}>
+                Hartă
+              </a>
+              <a href="#" className={styles.navItem}>
+                fiipregatit.ro
+              </a>
+            </Stack>
+          )}
+          {matches && (
+              <Menu  sx={{ color: "#fff", height: 44, width: 44, cursor: "pointer" }} />
+          )}
         </Toolbar>
       </AppBar>
     </Box>
