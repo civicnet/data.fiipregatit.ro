@@ -1,6 +1,7 @@
 import {
   Box,
   Grid,
+  Skeleton,
   Theme,
   ToggleButton,
   ToggleButtonGroup,
@@ -28,7 +29,7 @@ import {
 import LocalitySummaryBookmarkCTA from "../components/LocalitySummaryBookmarkCTA";
 import dynamic from "next/dynamic";
 
-const DynamicCovidMap = dynamic(() => import("../components/CovidMap"));
+const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), { ssr : false, loading: ()=> <Skeleton height="100%" /> });
 
 const Home: NextPage = () => {
   const theme = useTheme();
@@ -61,7 +62,7 @@ const Home: NextPage = () => {
       <SearchAppBar />
       <Box
         sx={{
-          background: "url(/header.jpg) no-repeat",
+          background: "url(/header.webp) no-repeat",
           height: matches ? "100px" : "350px",
           width: "100%",
           backgroundSize: "cover",
@@ -209,7 +210,7 @@ const Home: NextPage = () => {
               </Typography>{" "}
               și <FontAwesomeIcon icon={faCoffee} /> de
             </Typography>
-            <img src="/CivicNetLogoNegative.svg" style={{ width: "150px" }} />
+            <img src="/CivicNetLogoNegative.svg" width="150px" height="35.6167px" />
             <Typography
               sx={{
                 color: "#bbb",

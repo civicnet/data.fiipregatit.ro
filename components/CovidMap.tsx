@@ -7,6 +7,7 @@ import chroma from "chroma-js";
 import { Layers } from "../pages/api/layers";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
 import { getSeverityLevel } from "../lib/getSeverityLevel";
+import { Skeleton } from "@mui/material";
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -41,7 +42,7 @@ export default function CovidMap() {
   }, []);
 
   if (!layersData) {
-    return null;
+    return <Skeleton width="100%" height="100%" />;
   }
 
   const domain = chroma

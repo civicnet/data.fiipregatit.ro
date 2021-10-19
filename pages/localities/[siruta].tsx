@@ -63,7 +63,7 @@ const LocalityPage: NextPage = () => {
       <SearchAppBar />
       <Box
         sx={{
-          background: "url(/header.jpg) no-repeat",
+          background: "url(/header.webp) no-repeat",
           height: matches ? "100px" : "350px",
           width: "100%",
           backgroundSize: "cover",

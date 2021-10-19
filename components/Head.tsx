@@ -17,10 +17,10 @@ export function Head({
       <link rel="icon" href="/qr.png" />
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Roboto:300,400,500,700&display=optional"
       />
       <link
-        href="https://fonts.googleapis.com/css?family=Merriweather:300,400,700|Roboto:300,400,700"
+        href="https://fonts.googleapis.com/css2?family=Merriweather:300,400,700|Roboto:300,400,700&display=optional"
         rel="stylesheet"
       />
       <meta name="viewport" content="initial-scale=1, width=device-width" />

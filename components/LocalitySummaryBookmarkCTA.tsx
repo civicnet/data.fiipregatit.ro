@@ -13,6 +13,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Skeleton,
   useTheme,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -85,7 +86,7 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
   }, []);
 
   if (!locality) {
-    return null;
+    return <Skeleton width="345px" height="340px" />;
   }
 
   const number = getNewestLocalityData(locality) || 0;

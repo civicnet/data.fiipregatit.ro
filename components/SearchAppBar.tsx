@@ -53,7 +53,7 @@ export default function SearchAppBar() {
         sx={{ pt: theme.spacing(2), pb: theme.spacing(2) }}
       >
         <Toolbar>
-          <img src="/Logo_DSU.svg" height="70" />
+          <img src="/Logo_DSU.svg" height="70" width="70" />
           <Box
             sx={{
               flexGrow: 1,
