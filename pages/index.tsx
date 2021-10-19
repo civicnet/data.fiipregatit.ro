@@ -26,7 +26,9 @@ import {
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
 import LocalitySummaryBookmarkCTA from "../components/LocalitySummaryBookmarkCTA";
-import CovidMap from "../components/CovidMap";
+import dynamic from "next/dynamic";
+
+const DynamicCovidMap = dynamic(() => import("../components/CovidMap"));
 
 const Home: NextPage = () => {
   const theme = useTheme();
@@ -153,7 +155,7 @@ const Home: NextPage = () => {
               </Grid>
               <Grid item xs={12}>
                 <Box sx={{ height: "600px", position: "relative" }}>
-                  <CovidMap />
+                  <DynamicCovidMap />
                 </Box>
               </Grid>
             </Grid>
