@@ -17,9 +17,7 @@ import {
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import { useSetRecoilState } from "recoil";
-import { trackedLocalitiesState } from "./TrackedLocalitiesSlider";
-import { Locality, LocalityWithFeature } from "../types/Locality";
+import { Locality } from "../types/Locality";
 import { getNewestLocalityData } from "../lib/getNewestLocalityData";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
 import { getSeverityLevel } from "../lib/getSeverityLevel";
@@ -27,18 +25,12 @@ import SimpleLineChart from "./SimpleLineChart";
 import { linearRegression } from "simple-statistics";
 import {
   BookmarkAdd,
-  BookmarkBorder,
-  Launch,
-  LocationCity,
   MyLocationOutlined,
-  Pin,
   Refresh,
-  SaveAlt,
   TrendingDown,
   TrendingFlat,
 } from "@mui/icons-material";
 import { useCallback, useState, useEffect } from "react";
-import { Feature } from "@turf/helpers";
 
 type Props = {
   style?: React.CSSProperties;
@@ -52,7 +44,6 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
   const [locationLoading, setLocationLoading] = useState(false);
 
   const theme = useTheme();
-  const setTrackedLocalities = useSetRecoilState(trackedLocalitiesState);
 
   const getCurrentLocation = useCallback(() => {
     if (!currentLocationActive) {
@@ -96,14 +87,6 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
   if (!locality) {
     return null;
   }
-
-  const removeLocality = (locality: Locality) => {
-    setTrackedLocalities((oldTrackedLocalitiesList) => {
-      return oldTrackedLocalitiesList.filter(
-        (l) => l.siruta !== locality.siruta
-      );
-    });
-  };
 
   const number = getNewestLocalityData(locality) || 0;
   let fill = SeverityLevelColor[getSeverityLevel(locality)];

@@ -17,9 +17,7 @@ import {
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import { useSetRecoilState } from "recoil";
-import { trackedLocalitiesState } from "./TrackedLocalitiesSlider";
-import { Locality, LocalityWithFeature } from "../types/Locality";
+import { LocalityWithFeature } from "../types/Locality";
 import { getNewestLocalityData } from "../lib/getNewestLocalityData";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
 import { getSeverityLevel } from "../lib/getSeverityLevel";
@@ -40,16 +38,6 @@ type Props = {
 
 export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
   const theme = useTheme();
-
-  const setTrackedLocalities = useSetRecoilState(trackedLocalitiesState);
-
-  const removeLocality = (locality: Locality) => {
-    setTrackedLocalities((oldTrackedLocalitiesList) => {
-      return oldTrackedLocalitiesList.filter(
-        (l) => l.siruta !== locality.siruta
-      );
-    });
-  };
 
   const number = getNewestLocalityData(locality) || 0;
   
