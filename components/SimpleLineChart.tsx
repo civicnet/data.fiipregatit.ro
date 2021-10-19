@@ -1,4 +1,3 @@
-import { width, lineHeight } from "@mui/system";
 import { DateValue } from "@visx/mock-data/lib/generators/genDateValue";
 import { ParentSize } from "@visx/responsive";
 import { LinePath } from "@visx/shape";
@@ -8,7 +7,6 @@ import { Group } from "@visx/group";
 import { scaleLinear, scaleTime } from "@visx/scale";
 import { min } from "../lib/min";
 import { max } from "../lib/max";
-import { linearRegression } from "simple-statistics";
 
 type Props = {
   series: Record<string, number>;
@@ -30,7 +28,10 @@ export default function SimpleLineChart({ series }: Props) {
     domain: [data[0].date, data[data.length - 1].date],
   });
   const yScale = scaleLinear<number>({
-    domain: [min(data.map(d => d.value)) || 0, max(data.map(d => d.value)) || 0],
+    domain: [
+      min(data.map((d) => d.value)) || 0,
+      max(data.map((d) => d.value)) || 0,
+    ],
   });
 
   return (

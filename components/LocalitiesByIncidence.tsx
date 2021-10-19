@@ -1,5 +1,4 @@
 import {
-    autocompleteClasses,
   Box,
   Card,
   CardContent,
@@ -16,7 +15,7 @@ import LocalitySummaryWidget from "./LocalitySummaryWidget";
 type Props = {
   low: number;
   high: number;
-  style?: CSSProperties,
+  style?: CSSProperties;
 };
 
 export default function LocalitiesByIncidence({ low, high, ...rest }: Props) {
@@ -41,7 +40,7 @@ export default function LocalitiesByIncidence({ low, high, ...rest }: Props) {
 
   if (!localities.length) {
     const skeletonCard = (
-      <Card sx={{ maxWidth: 345, m: 2 }} style={{ margin: "0 auto", }}>
+      <Card sx={{ maxWidth: 345, m: 2 }} style={{ margin: "0 auto" }}>
         <CardHeader
           avatar={
             <Skeleton
@@ -86,13 +85,15 @@ export default function LocalitiesByIncidence({ low, high, ...rest }: Props) {
     return (
       <Box sx={{ flexGrow: 1 }} {...rest}>
         <Grid container spacing={2}>
-          {Array(limit).fill(1).map((_d, idx) => {
-            return (
-              <Grid item xs={12} sm={6} md={4} key={`skeleton-card-${idx}`}>
-                {skeletonCard}
-              </Grid>
-            );
-          })}
+          {Array(limit)
+            .fill(1)
+            .map((_d, idx) => {
+              return (
+                <Grid item xs={12} sm={6} md={4} key={`skeleton-card-${idx}`}>
+                  {skeletonCard}
+                </Grid>
+              );
+            })}
         </Grid>
       </Box>
     );
@@ -103,7 +104,7 @@ export default function LocalitiesByIncidence({ low, high, ...rest }: Props) {
       <Grid container spacing={2}>
         {localities.map((l) => (
           <Grid item xs={12} sm={6} md={4} key={l.siruta}>
-            <LocalitySummaryWidget locality={l} style={{ margin: "0 auto", }} />
+            <LocalitySummaryWidget locality={l} style={{ margin: "0 auto" }} />
           </Grid>
         ))}
       </Grid>

@@ -3,14 +3,11 @@ import { styled, useTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
-import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
-import { Stack, SvgIcon } from "@mui/material";
+import { Stack } from "@mui/material";
 import { useRouter } from "next/dist/client/router";
-import { CSSProperties } from "@mui/system";
 import styles from "./SearchAppBar.module.css";
 
 const SearchIconWrapper = styled("div")(({ theme }) => ({
@@ -47,23 +44,6 @@ export default function SearchAppBar() {
   const goHome = (e: React.MouseEvent) => {
     e.preventDefault();
     router.push("/");
-  };
-
-  const navItemSx = {
-    color: theme.palette.secondary.main,
-    textTransform: "uppercase",
-    "&:after": {
-      position: "absolute",
-      color: "#fff",
-      right: "0",
-      top: "38px",
-      width: "100%",
-      content: `" "`,
-      display: "block",
-      borderBottom: "5px solid #fff",
-      transform: "scaleX(0)",
-      transition: "transform .3s ease-out",
-    },
   };
 
   return (

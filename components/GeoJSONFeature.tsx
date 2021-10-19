@@ -1,19 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { scaleQuantize } from "@visx/scale";
+import React from "react";
 import { Mercator, Graticule } from "@visx/geo";
 import { ParentSize } from "@visx/responsive";
-import centroid from "@turf/centroid";
-import union from "@turf/union";
 import { Box, CircularProgress, useTheme } from "@mui/material";
-import { Locality } from "../types/Locality";
-import { COUNTIES_URL, UATS_URL } from "../lib/constants";
-import {
-  Feature,
-  featureCollection,
-  MultiPolygon,
-  Polygon,
-} from "@turf/helpers";
-import dissolve from "@turf/dissolve";
+import { Feature } from "@turf/helpers";
 import { GeoPermissibleObjects } from "@visx/geo/lib/types";
 
 type FeatureProps = {
@@ -93,19 +82,18 @@ export default function GeoJSONFeature({ features, background }: Props) {
                   step={[0.2, 0.2]}
                 />
                 {mercator.features.map(({ feature, path }, i) => {
-                  const candidate = features.find(
-                    (f) => {
-                      const needle = "properties" in feature 
+                  const candidate = features.find((f) => {
+                    const needle =
+                      "properties" in feature
                         ? feature.properties?.natcode
                         : undefined;
 
-                      if (!candidate || !needle) {
-                        return false;
-                      }
+                    if (!candidate || !needle) {
+                      return false;
+                    }
 
-                      return f.feature.properties?.natcode ===
-                      needle
-                    });
+                    return f.feature.properties?.natcode === needle;
+                  });
 
                   return (
                     <path

@@ -7,7 +7,6 @@ import MyLocationIcon from "@mui/icons-material/MyLocation";
 import {
   Box,
   ClickAwayListener,
-  Fade,
   Grid,
   Grow,
   List,
@@ -15,14 +14,12 @@ import {
   ListItemButton,
   ListItemText,
   Portal,
-  useTheme,
 } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Locality } from "../types/Locality";
 import { getNewestLocalityData } from "../lib/getNewestLocalityData";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import styles from "./SearchInput.module.css";
-import { Feature } from "@turf/turf";
 import { useRouter } from "next/dist/client/router";
 
 const LIMIT = 5;

@@ -1,10 +1,8 @@
 import { Autocomplete, createFilterOptions, TextField } from "@mui/material";
-import { matchSorter } from "match-sorter";
 import React from "react";
 import { useSetRecoilState } from "recoil";
 import Data from "../data/octombrie.json";
 import { labelForLocality } from "../lib/labelForLocality";
-import { toTitleCase } from "../lib/toTitleCase";
 import { Locality } from "../types/Locality";
 import { selectedLocalityForTrackingState } from "./TrackedLocalitiesSlider";
 

@@ -6,7 +6,6 @@ import Typography from "@mui/material/Typography";
 import {
   Avatar,
   Box,
-  Button,
   CardActions,
   CardHeader,
   Divider,
@@ -16,32 +15,23 @@ import {
   ListItemText,
   useTheme,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Close";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { useSetRecoilState } from "recoil";
-import GeoJSONFeature from "./GeoJSONFeature";
-import { labelForLocality } from "../lib/labelForLocality";
 import { trackedLocalitiesState } from "./TrackedLocalitiesSlider";
 import { Locality, LocalityWithFeature } from "../types/Locality";
 import { getNewestLocalityData } from "../lib/getNewestLocalityData";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
 import { getSeverityLevel } from "../lib/getSeverityLevel";
-import { SeverityLevel } from "../lib/SeverityLevel";
 import SimpleLineChart from "./SimpleLineChart";
 import { linearRegression } from "simple-statistics";
 import {
   BookmarkAdd,
-  BookmarkBorder,
   Launch,
-  MasksOutlined,
-  Pin,
   Rule,
   TrendingDown,
   TrendingFlat,
 } from "@mui/icons-material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeadSideMask, faMapPin } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
   style?: React.CSSProperties;
@@ -62,8 +52,7 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
   };
 
   const number = getNewestLocalityData(locality) || 0;
-  let fill = SeverityLevelColor[getSeverityLevel(locality)];
-
+  
   const data = Object.entries(locality.data);
   const regression = linearRegression(
     data.map(([key, value]) => [new Date(key).valueOf(), value])

@@ -2,6 +2,10 @@ import { useEffect } from "react";
 import { useRecoilSnapshot } from "recoil";
 
 export function DebugObserver() {
+  if (process.env.NODE_ENV === "production") {
+    return null;
+  }
+  
   const snapshot = useRecoilSnapshot();
   useEffect(() => {
     console.debug("The following atoms were modified:");

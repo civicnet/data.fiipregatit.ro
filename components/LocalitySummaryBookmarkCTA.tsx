@@ -6,7 +6,6 @@ import Typography from "@mui/material/Typography";
 import {
   Avatar,
   Box,
-  Button,
   CardActions,
   CardHeader,
   Divider,
@@ -16,18 +15,14 @@ import {
   ListItemText,
   useTheme,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Close";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { useSetRecoilState } from "recoil";
-import GeoJSONFeature from "./GeoJSONFeature";
-import { labelForLocality } from "../lib/labelForLocality";
 import { trackedLocalitiesState } from "./TrackedLocalitiesSlider";
 import { Locality, LocalityWithFeature } from "../types/Locality";
 import { getNewestLocalityData } from "../lib/getNewestLocalityData";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
 import { getSeverityLevel } from "../lib/getSeverityLevel";
-import { SeverityLevel } from "../lib/SeverityLevel";
 import SimpleLineChart from "./SimpleLineChart";
 import { linearRegression } from "simple-statistics";
 import {

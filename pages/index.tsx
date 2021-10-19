@@ -1,8 +1,6 @@
 import {
   Box,
-  Button,
   Grid,
-  IconButton,
   Theme,
   ToggleButton,
   ToggleButtonGroup,
@@ -11,12 +9,10 @@ import {
   useTheme,
 } from "@mui/material";
 import type { NextPage } from "next";
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import SearchAppBar from "../components/SearchAppBar";
 import styles from "../styles/Home.module.css";
 import { Head } from "../components/Head";
-import Data from "../data/octombrie.json";
-import { TrackedLocalitiesSlider } from "../components/TrackedLocalitiesSlider";
 import SearchInput from "../components/SearchInput";
 import LocalitiesByIncidence from "../components/LocalitiesByIncidence";
 import { SxProps } from "@mui/system";
@@ -24,17 +20,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCoffee,
   faFont,
-  faHandHoldingHeart,
   faHandPaper,
-  faHandPeace,
   faHeart,
-  faMugHot,
   faTh,
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
-import { LocalityWithFeature } from "../types/Locality";
-import LocalitySummaryWidget from "../components/LocalitySummaryWidget";
-import { AddAlert, AddchartOutlined, PlusOne } from "@mui/icons-material";
 import LocalitySummaryBookmarkCTA from "../components/LocalitySummaryBookmarkCTA";
 import CovidMap from "../components/CovidMap";
 
