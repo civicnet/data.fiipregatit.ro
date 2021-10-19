@@ -2,7 +2,6 @@ import { Box, Grid, Theme, Typography, useMediaQuery, useTheme } from "@mui/mate
 import type { NextPage } from "next";
 import React, { useCallback, useEffect, useState } from "react";
 import SearchAppBar from "../../components/SearchAppBar";
-/* import styles from "../styles/Home.module.css"; */
 import { Head } from "../../components/Head";
 import SearchInput from "../../components/SearchInput";
 import { SxProps } from "@mui/system";
@@ -14,9 +13,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import LocalitySummaryWidget from "../../components/LocalitySummaryWidget";
 import { useRouter } from "next/dist/client/router";
-import { Locality, LocalityWithFeature } from "../../types/Locality";
+import { LocalityWithFeature } from "../../types/Locality";
 import { labelForLocality } from "../../lib/labelForLocality";
-import SimpleLineChart from "../../components/SimpleLineChart";
 
 const LocalityPage: NextPage = () => {
   const [locality, setLocality] = useState<LocalityWithFeature>();
@@ -90,7 +88,7 @@ const LocalityPage: NextPage = () => {
       </Box>
       <main>
         {locality && (
-          <Grid container spacing={2} xs={12} lg={8} sx={{ margin: "0 auto" }}>
+          <Grid container spacing={2} sx={{ margin: "0 auto" }}>
             <Grid item xs={12}>
               <Typography variant="h1" sx={headlineSx}>
                 {labelForLocality(locality)}

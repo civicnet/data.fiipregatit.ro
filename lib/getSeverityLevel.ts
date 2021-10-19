@@ -2,8 +2,17 @@ import { Locality } from "../types/Locality";
 import { getNewestLocalityData } from "./getNewestLocalityData";
 import { SeverityLevel } from "./SeverityLevel";
 
-export const getSeverityLevel = (locality: Locality): SeverityLevel => {
-  const rate = getNewestLocalityData(locality);
+export function getSeverityLevel(locality: Locality): SeverityLevel;
+export function getSeverityLevel(rate: number): SeverityLevel;
+
+export function getSeverityLevel(
+  localityOrRate: Locality | number
+): SeverityLevel {
+  const rate =
+    typeof localityOrRate === "number"
+      ? localityOrRate
+      : getNewestLocalityData(localityOrRate);
+
   if (rate === undefined) {
     return SeverityLevel.NONE;
   }

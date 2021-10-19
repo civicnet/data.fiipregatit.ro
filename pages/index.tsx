@@ -1,7 +1,11 @@
 import {
   Box,
+  Button,
   Grid,
+  IconButton,
   Theme,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
   useMediaQuery,
   useTheme,
@@ -19,20 +23,24 @@ import { SxProps } from "@mui/system";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCoffee,
+  faFont,
   faHandHoldingHeart,
   faHandPaper,
   faHandPeace,
   faHeart,
   faMugHot,
+  faTh,
+  faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
+import { LocalityWithFeature } from "../types/Locality";
+import LocalitySummaryWidget from "../components/LocalitySummaryWidget";
+import { AddAlert, AddchartOutlined, PlusOne } from "@mui/icons-material";
+import LocalitySummaryBookmarkCTA from "../components/LocalitySummaryBookmarkCTA";
+import CovidMap from "../components/CovidMap";
 
 const Home: NextPage = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const sortedUATs = Data.sort(
-    (a, b) => b.data["2021-10-14"] - a.data["2021-10-14"]
-  );
 
   const headlineSx: SxProps<Theme> = {
     textTransform: "uppercase",
@@ -47,6 +55,11 @@ const Home: NextPage = () => {
       width: "100px",
       margin: "25px auto 15px",
     },
+  };
+
+  const byIncidentStyles = {
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3),
   };
 
   return (
@@ -80,31 +93,108 @@ const Home: NextPage = () => {
         <SearchInput />
       </Box>
       <main className={styles.main}>
-        {/* <TrackedLocalitiesSlider /> */}
-        <Grid container spacing={2} xs={12} lg={8} sx={{ margin: "0 auto" }}>
-          <Grid item xs={12}>
-            <Typography variant="h1" sx={headlineSx}>
-              Peste 7,5‰
-            </Typography>
-            <LocalitiesByIncidence low={7.5} high={1000} />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h1" sx={headlineSx}>
-              Între 6‰ și 7,5‰
-            </Typography>
-            <LocalitiesByIncidence low={6} high={7.5} />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h1" sx={headlineSx}>
-              Între 3‰ și 6‰
-            </Typography>
-            <LocalitiesByIncidence low={3} high={6} />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h1" sx={headlineSx}>
-              Sub 3‰
-            </Typography>
-            <LocalitiesByIncidence low={0} high={3} />
+        <Grid container justifyContent="center">
+          <Grid item xs={8} lg={6} xl={5}>
+            <Grid
+              container
+              justifyContent="space-between"
+              sx={{
+                mt: 8,
+              }}
+            >
+              <Grid item xs={12} md={6}>
+                <Typography
+                  variant="h1"
+                  sx={{
+                    fontSize: "1.7rem",
+                    fontWeight: 500,
+                    pb: 6,
+                    maxWidth: theme.spacing(60),
+                    "&:after": {
+                      content: `" "`,
+                      display: "block",
+                      width: "50%",
+                      borderBottom: `5px solid ${theme.palette.primary.main}`,
+                      mt: 2,
+                    },
+                  }}
+                >
+                  Marchează localitățile de interes personal pentru access ușor
+                  mai târziu
+                </Typography>
+                <Typography>
+                  Informațiile sunt salvate doar pe dispozitivul tău, fără a fi
+                  necesară crearea unui cont. Va trebui să recreezi lista de
+                  localități marcate pe fiecare dispozitiv nou folosit.
+                </Typography>
+              </Grid>
+              <Grid
+                item
+                sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                xs={12}
+                md={6}
+                justifyContent="end"
+              >
+                <LocalitySummaryBookmarkCTA />
+              </Grid>
+            </Grid>
+            <Grid container sx={{ margin: `${theme.spacing(8)} auto` }}>
+              <Grid item xs={12}>
+                <Typography variant="h1" sx={headlineSx}>
+                  Hartă
+                </Typography>
+                <ToggleButtonGroup
+                  value={"uats"}
+                  exclusive
+                  onChange={() => {}}
+                  aria-label="text alignment"
+                  sx={{ mb: 3 }}
+                >
+                  <ToggleButton value="uats" aria-label="left aligned">
+                    <FontAwesomeIcon icon={faTh} />
+                  </ToggleButton>
+                  <ToggleButton value="counties" aria-label="centered">
+                    <FontAwesomeIcon icon={faThLarge} />
+                  </ToggleButton>
+                  <ToggleButton value="labeled" aria-label="right aligned">
+                    <FontAwesomeIcon icon={faFont} />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Grid>
+              <Grid item xs={12}>
+                <Box sx={{ height: "600px", position: "relative" }}>
+                  <CovidMap />
+                </Box>
+              </Grid>
+            </Grid>
+            {/* <TrackedLocalitiesSlider /> */}
+            <Grid container sx={{ margin: `${theme.spacing(8)} auto` }}>
+              <Grid item xs={12}>
+                <Typography variant="h1" sx={headlineSx}>
+                  Situația la nivel național
+                </Typography>
+                <LocalitiesByIncidence
+                  low={7.5}
+                  high={1000}
+                  style={byIncidentStyles}
+                />
+                <LocalitiesByIncidence
+                  low={6}
+                  high={7.5}
+                  style={byIncidentStyles}
+                />
+                <LocalitiesByIncidence
+                  low={3}
+                  high={6}
+                  style={byIncidentStyles}
+                />
+                <LocalitiesByIncidence
+                  low={0}
+                  high={3}
+                  style={byIncidentStyles}
+                />
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </main>

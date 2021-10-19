@@ -1,27 +1,25 @@
 import {
-  Avatar,
+    autocompleteClasses,
   Box,
   Card,
   CardContent,
   CardHeader,
-  CardMedia,
   Grid,
-  IconButton,
   Skeleton,
-  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/system";
-import React, { useCallback, useEffect, useState } from "react";
-import { Locality, LocalityWithFeature } from "../types/Locality";
+import React, { CSSProperties, useCallback, useEffect, useState } from "react";
+import { LocalityWithFeature } from "../types/Locality";
 import LocalitySummaryWidget from "./LocalitySummaryWidget";
 
 type Props = {
   low: number;
   high: number;
+  style?: CSSProperties,
 };
 
-export default function LocalitiesByIncidence({ low, high }: Props) {
+export default function LocalitiesByIncidence({ low, high, ...rest }: Props) {
   const [localities, setLocalities] = useState<LocalityWithFeature[]>([]);
 
   const theme = useTheme();
@@ -43,7 +41,7 @@ export default function LocalitiesByIncidence({ low, high }: Props) {
 
   if (!localities.length) {
     const skeletonCard = (
-      <Card sx={{ maxWidth: 345, m: 2 }}>
+      <Card sx={{ maxWidth: 345, m: 2 }} style={{ margin: "0 auto", }}>
         <CardHeader
           avatar={
             <Skeleton
@@ -86,11 +84,11 @@ export default function LocalitiesByIncidence({ low, high }: Props) {
     );
 
     return (
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1 }} {...rest}>
         <Grid container spacing={2}>
-          {Array(limit).fill(1).map(() => {
+          {Array(limit).fill(1).map((_d, idx) => {
             return (
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6} md={4} key={`skeleton-card-${idx}`}>
                 {skeletonCard}
               </Grid>
             );
@@ -101,11 +99,11 @@ export default function LocalitiesByIncidence({ low, high }: Props) {
   }
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1 }} {...rest}>
       <Grid container spacing={2}>
         {localities.map((l) => (
           <Grid item xs={12} sm={6} md={4} key={l.siruta}>
-            <LocalitySummaryWidget locality={l} />
+            <LocalitySummaryWidget locality={l} style={{ margin: "0 auto", }} />
           </Grid>
         ))}
       </Grid>

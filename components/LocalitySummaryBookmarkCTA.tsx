@@ -34,24 +34,73 @@ import {
   BookmarkAdd,
   BookmarkBorder,
   Launch,
-  MasksOutlined,
+  LocationCity,
+  MyLocationOutlined,
   Pin,
-  Rule,
+  Refresh,
+  SaveAlt,
   TrendingDown,
   TrendingFlat,
 } from "@mui/icons-material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeadSideMask, faMapPin } from "@fortawesome/free-solid-svg-icons";
+import { useCallback, useState, useEffect } from "react";
+import { Feature } from "@turf/helpers";
 
 type Props = {
   style?: React.CSSProperties;
-  locality: LocalityWithFeature;
 };
 
-export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
-  const theme = useTheme();
+export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
+  const [locality, setRandomLocality] = useState<Locality>();
+  const [loadingLocality, setLoadingLocality] = useState(false);
 
+  const [currentLocationActive, setCurrentLocationActive] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
+
+  const theme = useTheme();
   const setTrackedLocalities = useSetRecoilState(trackedLocalitiesState);
+
+  const getCurrentLocation = useCallback(() => {
+    if (!currentLocationActive) {
+      if (locationLoading) {
+        return;
+      }
+
+      setLocationLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const data = await fetch(
+            `/api/geocode?lat=${latitude}&lng=${longitude}`
+          );
+          const json: Locality = await data.json();
+
+          setCurrentLocationActive(true);
+          setLocationLoading(false);
+          setRandomLocality(json);
+        },
+        () => setLocationLoading(false)
+      );
+    } else {
+      setCurrentLocationActive(false);
+    }
+  }, [currentLocationActive]);
+
+  const fetchRandom = useCallback(async () => {
+    setLoadingLocality(true);
+    const response = await fetch(`/api/random`);
+    const json = await response.json();
+    setRandomLocality(json);
+    setCurrentLocationActive(false);
+    setLoadingLocality(false);
+  }, [locality, loadingLocality]);
+
+  useEffect(() => {
+    fetchRandom();
+  }, []);
+
+  if (!locality) {
+    return null;
+  }
 
   const removeLocality = (locality: Locality) => {
     setTrackedLocalities((oldTrackedLocalitiesList) => {
@@ -77,7 +126,7 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
   }
 
   return (
-    <Card sx={{ maxWidth: 345 }} variant="outlined" {...rest}>
+    <Card sx={{ width: 345 }} variant="outlined" {...rest}>
       <CardHeader
         avatar={
           <Avatar
@@ -134,14 +183,20 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
         </List>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton>
+        <IconButton
+          onClick={fetchRandom}
+          disabled={!!locality && loadingLocality}
+        >
+          <Refresh />
+        </IconButton>
+        <IconButton
+          onClick={getCurrentLocation}
+          disabled={currentLocationActive || locationLoading}
+        >
+          <MyLocationOutlined />
+        </IconButton>
+        <IconButton onClick={fetchRandom} sx={{ ml: "auto" }}>
           <BookmarkAdd />
-        </IconButton>
-        <IconButton href="https://fiipregatit.ro" target="_blank">
-          <Rule />
-        </IconButton>
-        <IconButton sx={{ ml: "auto" }}>
-          <Launch />
         </IconButton>
       </CardActions>
     </Card>

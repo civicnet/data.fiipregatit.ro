@@ -1,9 +1,11 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
-import React from "react";
+import React, { useEffect } from "react";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { RecoilRoot } from "recoil";
 import { DebugObserver } from "../components/DebugObserver";
+import { useRouter } from 'next/router'
+import { logPageview } from "../lib/ga/logPageview";
 
 const theme = createTheme({
   palette: {
@@ -39,6 +41,20 @@ const theme = createTheme({
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      logPageview(url);
+    };
+    
+    router.events.on("routeChangeComplete", handleRouteChange);
+
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events]);
+  
   return (
     <RecoilRoot>
       <DebugObserver />

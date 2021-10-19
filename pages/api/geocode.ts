@@ -25,7 +25,13 @@ export default async function handler(
     if (
       turf.booleanContains(locality, turf.point([Number(lng), Number(lat)]))
     ) {
-      return res.status(200).json(locality);
+      for (const localityData of Data) {
+        if (localityData.siruta !== locality.properties.natcode) {
+          continue;
+        }
+        
+        return res.status(200).json(localityData);
+      }
     }
   }
 

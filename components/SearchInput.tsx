@@ -1,54 +1,25 @@
 import * as React from "react";
-import Paper, { PaperProps } from "@mui/material/Paper";
+import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import DirectionsIcon from "@mui/icons-material/Directions";
 import MyLocationIcon from "@mui/icons-material/MyLocation";
-import TableViewIcon from "@mui/icons-material/TableView";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import ViewIcon from "@mui/icons-material/Visibility";
-import { MapIcon } from "./MapIcon";
 import {
   Box,
+  ClickAwayListener,
   Fade,
   Grid,
   Grow,
   List,
   ListItem,
   ListItemButton,
-  ListItemButtonProps,
-  ListItemIcon,
   ListItemText,
-  makeStyles,
-  MenuItem,
-  MenuList,
-  Popper,
-  PopperProps,
   Portal,
-  styled,
-  Theme,
-  Typography,
   useTheme,
 } from "@mui/material";
-import * as turf from "@turf/turf";
-import { createRef, useCallback, useEffect, useRef, useState } from "react";
-import { Check } from "@mui/icons-material";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Locality } from "../types/Locality";
-import { labelForLocality } from "../lib/labelForLocality";
-import { SeverityLevelDescription } from "../lib/SeverityLevelDescription";
-import { getSeverityLevel } from "../lib/getSeverityLevel";
-import { SeverityLevelColor } from "../lib/SeverityLevelColor";
 import { getNewestLocalityData } from "../lib/getNewestLocalityData";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSyringe } from "@fortawesome/free-solid-svg-icons/faSyringe";
-import {
-  faLevelDownAlt,
-  faLevelUpAlt,
-  faVirus,
-} from "@fortawesome/free-solid-svg-icons";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import styles from "./SearchInput.module.css";
 import { Feature } from "@turf/turf";
@@ -63,9 +34,9 @@ export default function SearchInput() {
   const [suggestions, setSuggestions] = useState<Locality[]>([]);
   const [activeSuggestion, setActiveSuggestion] = useState<number>(0);
   const [suggestionCount, setSuggestionCount] = useState<number>(0);
+  const [isSuggestionPopupOpen, setIsSuggestionPopupOpen] = useState(false);
 
   const router = useRouter();
-  const theme = useTheme();
   const container = useRef(null);
 
   useEffect(() => {
@@ -91,9 +62,10 @@ export default function SearchInput() {
           const data = await fetch(
             `/api/geocode?lat=${latitude}&lng=${longitude}`
           );
-          const json: Feature = await data.json();
+          const json: Locality = await data.json();
 
-          setValue(`${json.properties?.name}, ${json.properties?.county}`);
+          setValue(`${json.uat}, ${json.county}`);
+          setIsSuggestionPopupOpen(true);
           setCurrentLocationActive(true);
           setLocationLoading(false);
         },
@@ -102,11 +74,13 @@ export default function SearchInput() {
     } else {
       setCurrentLocationActive(false);
       setValue("");
+      setIsSuggestionPopupOpen(false);
     }
   }, [currentLocationActive, value]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
+    setIsSuggestionPopupOpen(!!event.target.value);
     if (currentLocationActive) {
       setCurrentLocationActive(false);
     }
@@ -135,16 +109,24 @@ export default function SearchInput() {
 
   const onKeyPressed = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowUp") {
-      // up arrow
       moveUp();
     } else if (e.key === "ArrowDown") {
-      // down arrow
       moveDown();
     }
   };
 
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const suggestion = suggestions[activeSuggestion];
+    router.push(`/localities/${suggestion.siruta}`);
+  };
+
+  const handleClickAway = () => {
+    setIsSuggestionPopupOpen(false);
+  };
+
   return (
-    <Grid container xs={11} lg={12} justifyContent="center">
+    <Grid container justifyContent="center">
       <Grid item xs={11} lg={4} xl={3} justifyContent="center">
         <Paper
           component="form"
@@ -153,9 +135,9 @@ export default function SearchInput() {
             display: "flex",
             alignItems: "center",
             position: "relative",
-            // width: 600,
             ...popperStyles,
           }}
+          onSubmit={onSubmit}
         >
           <IconButton
             sx={{ p: "10px" }}
@@ -186,57 +168,52 @@ export default function SearchInput() {
           <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
             <SearchIcon />
           </IconButton>
-          <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-          <IconButton
-            color="primary"
-            sx={{ p: "10px" }}
-            aria-label="directions"
-          >
-            <MapIcon />
-          </IconButton>
-          {value && (
+          {isSuggestionPopupOpen && (
             <Portal container={container.current as any}>
               <Grow in={!!value}>
                 <Paper sx={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
-                  <List>
-                    {suggestions.map((s, idx) => (
-                      <ListItem>
-                        <ListItemButton
-                          selected={idx === activeSuggestion}
-                          classes={{
-                            selected: styles.selected,
-                          }}
-                          onClick={() => {
-                            setValue("");
-                            router.push(`/localities/${s.siruta}`);
-                          }}
-                        >
-                          <ListItemText
-                            primary={`${s.uat}`}
-                            secondary={`Județ ${
-                              s.county
-                            }, incidență ${getNewestLocalityData(s)?.toFixed(
-                              2
-                            )}‰`}
-                          />
+                  <ClickAwayListener onClickAway={handleClickAway}>
+                    <List>
+                      {suggestions.map((s, idx) => (
+                        <ListItem key={`suggestion-${s.siruta}`}>
+                          <ListItemButton
+                            selected={idx === activeSuggestion}
+                            classes={{
+                              selected: styles.selected,
+                            }}
+                            onClick={() => {
+                              setValue("");
+                              setIsSuggestionPopupOpen(false);
+                              router.push(`/localities/${s.siruta}`);
+                            }}
+                          >
+                            <ListItemText
+                              primary={`${s.uat}`}
+                              secondary={`Județ ${
+                                s.county
+                              }, incidență ${getNewestLocalityData(s)?.toFixed(
+                                2
+                              )}‰`}
+                            />
 
-                          <KeyboardReturnIcon />
-                        </ListItemButton>
-                      </ListItem>
-                    ))}
-                    {suggestionCount > LIMIT && (
-                      <ListItem>
-                        <ListItemButton>
-                          <ListItemText
-                            secondary={`Vezi alte ${
-                              suggestionCount - LIMIT
-                            } sugestii.`}
-                          />
-                          <KeyboardReturnIcon />
-                        </ListItemButton>
-                      </ListItem>
-                    )}
-                  </List>
+                            <KeyboardReturnIcon />
+                          </ListItemButton>
+                        </ListItem>
+                      ))}
+                      {suggestionCount > LIMIT && (
+                        <ListItem>
+                          <ListItemButton>
+                            <ListItemText
+                              secondary={`Vezi alte ${
+                                suggestionCount - LIMIT
+                              } sugestii.`}
+                            />
+                            <KeyboardReturnIcon />
+                          </ListItemButton>
+                        </ListItem>
+                      )}
+                    </List>
+                  </ClickAwayListener>
                 </Paper>
               </Grow>
             </Portal>

@@ -1,0 +1,28 @@
+.navItem {
+  color: #ffc;
+  text-transform: uppercase;
+  margin-right: 25px;
+  font-size: 14px;
+  text-decoration: none;
+  letter-spacing: 1px;
+  position: relative;
+  display: inline-block;
+}
+
+.navItem::after {
+  position: absolute;
+  color: #fff;
+  right: 0;
+  top: 38px;
+  width: 100%;
+  content: " ";
+  display: block;
+  border-bottom: 5px solid #fff;
+  transform: scaleX(0);
+  transition: transform 0.3s ease-out;
+}
+
+.navItem:hover::after {
+    transform: scaleX(1);
+  }
+  
