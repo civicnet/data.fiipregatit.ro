@@ -14,6 +14,7 @@ import {
   ListItemButton,
   ListItemText,
   Portal,
+  Skeleton,
 } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Locality } from "../types/Locality";
@@ -171,6 +172,19 @@ export default function SearchInput() {
                 <Paper sx={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
                   <ClickAwayListener onClickAway={handleClickAway}>
                     <List>
+                      {suggestions.length === 0 &&
+                        Array(6)
+                          .fill(1)
+                          .map((_, idx) => {
+                            return (
+                              <ListItem key={`suggestion-placeholder-${idx}`}>
+                                <Box sx={{ display: "flex", width: "100%", height: 48, justifyContent: "space-between" }}>
+                                  <Skeleton sx={{ width: Math.random() < .5 ? "40%" : "30%" }} />
+                                  <Skeleton sx={{ width: 48 }} />
+                                </Box>
+                              </ListItem>
+                            );
+                          })}
                       {suggestions.map((s, idx) => (
                         <ListItem key={`suggestion-${s.siruta}`}>
                           <ListItemButton

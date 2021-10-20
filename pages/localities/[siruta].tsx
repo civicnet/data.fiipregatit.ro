@@ -1,4 +1,12 @@
-import { Box, Grid, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Skeleton,
+  Theme,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import type { NextPage } from "next";
 import React, { useCallback, useEffect, useState } from "react";
 import SearchAppBar from "../../components/SearchAppBar";
@@ -15,17 +23,26 @@ import LocalitySummaryWidget from "../../components/LocalitySummaryWidget";
 import { useRouter } from "next/dist/client/router";
 import { LocalityWithFeature } from "../../types/Locality";
 import { labelForLocality } from "../../lib/labelForLocality";
+import Header from "../../components/Header";
+import dynamic from "next/dynamic";
+import { CovidMapLayers } from "../../components/CovidMap";
+import turfCentroid from "@turf/centroid";
+import { Feature, Point, Properties } from "@turf/helpers";
+
+const DynamicCovidMap = dynamic(() => import("../../components/CovidMap"), {
+  ssr: false,
+  loading: () => <Skeleton height="100%" />,
+});
 
 const LocalityPage: NextPage = () => {
   const [locality, setLocality] = useState<LocalityWithFeature>();
+  const [centroid, setCentroid] = useState<Feature<Point, Properties>>();
 
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
   const router = useRouter();
   const { siruta } = router.query;
-
-  console.log("sir", siruta, router.query);
 
   const fetchLocality = useCallback(async () => {
     if (!siruta) {
@@ -33,8 +50,11 @@ const LocalityPage: NextPage = () => {
     }
 
     const response = await fetch(`/api/bySiruta?code=${siruta}`);
-    const json = await response.json();
+    const json = await response.json() as LocalityWithFeature;
     setLocality(json);
+
+    const centroidCoords = turfCentroid(json.features.uat);
+    setCentroid(centroidCoords);
   }, [siruta]);
 
   useEffect(() => {
@@ -59,44 +79,39 @@ const LocalityPage: NextPage = () => {
   return (
     <div>
       <Head />
-
-      <SearchAppBar />
-      <Box
-        sx={{
-          background: "url(/header.webp) no-repeat",
-          height: matches ? "100px" : "350px",
-          width: "100%",
-          backgroundSize: "cover",
-          backgroundPositionY: "25%",
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          "&:before": {
-            content: `" "`,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0, 0, 0, .7)",
-            display: "block",
-            position: "absolute",
-            top: 0,
-            left: 0,
-          },
-        }}
-      >
-          <SearchInput />
-      </Box>
+      <Header />
       <main>
-        {locality && (
-          <Grid container spacing={2} sx={{ margin: "0 auto" }}>
-            <Grid item xs={12}>
-              <Typography variant="h1" sx={headlineSx}>
-                {labelForLocality(locality)}
-              </Typography>
-              <LocalitySummaryWidget locality={locality} />
-            </Grid>
+        <Grid container justifyContent="center">
+          <Grid item xs={11} lg={6} xl={5}>
+            {(locality &&centroid) && (
+              <>
+                <Typography variant="h1" sx={headlineSx}>
+                  {labelForLocality(locality)}
+                </Typography>
+                <Grid container spacing={2} sx={{ margin: "0 auto" }}>
+                  <Grid item xs={12} md={6}>
+                    <LocalitySummaryWidget locality={locality} />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Box sx={{ width: "100%", height: "100%", position: "relative" }}>
+                      <DynamicCovidMap
+                        layers={[CovidMapLayers.UATS]}
+                        county={locality.county}
+                        viewState={{
+                          latitude: centroid.geometry.coordinates[1] || 0, 
+                          longitude: centroid.geometry.coordinates[0] || 0, 
+                          zoom: 8.5,
+                          pitch: 0,
+                          bearing: 0,
+                        }}
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
+              </>
+            )}
           </Grid>
-        )}
+        </Grid>
       </main>
       <footer
         style={{

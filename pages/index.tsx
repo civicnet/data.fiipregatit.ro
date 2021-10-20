@@ -2,6 +2,7 @@ import {
   Box,
   Grid,
   Skeleton,
+  Stack,
   Theme,
   ToggleButton,
   ToggleButtonGroup,
@@ -10,11 +11,9 @@ import {
   useTheme,
 } from "@mui/material";
 import type { NextPage } from "next";
-import React from "react";
-import SearchAppBar from "../components/SearchAppBar";
+import React, { MouseEvent, useState } from "react";
 import styles from "../styles/Home.module.css";
 import { Head } from "../components/Head";
-import SearchInput from "../components/SearchInput";
 import LocalitiesByIncidence from "../components/LocalitiesByIncidence";
 import { SxProps } from "@mui/system";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -29,7 +28,11 @@ import {
 import LocalitySummaryBookmarkCTA from "../components/LocalitySummaryBookmarkCTA";
 import dynamic from "next/dynamic";
 import { CovidMapLayers } from "../components/CovidMap";
-import { BookmarkAdd, BookmarkAddOutlined } from "@mui/icons-material";
+import { BookmarkAddOutlined } from "@mui/icons-material";
+import Header from "../components/Header";
+import { SeverityLevelColor } from "../lib/SeverityLevelColor";
+import { SeverityLevelDescription } from "../lib/SeverityLevelDescription";
+import { SeverityLevel } from "../lib/SeverityLevel";
 
 const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
   ssr: false,
@@ -37,8 +40,8 @@ const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
 });
 
 const Home: NextPage = () => {
+  const [selectedLayer, setSelectedLayer] = useState(CovidMapLayers.COUNTIES);
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
   const headlineSx: SxProps<Theme> = {
     textTransform: "uppercase",
@@ -60,36 +63,14 @@ const Home: NextPage = () => {
     marginBottom: theme.spacing(3),
   };
 
+  const selectLayer = (_e: MouseEvent, layer: CovidMapLayers) => {
+    setSelectedLayer(layer);
+  };
+
   return (
     <div className={styles.container}>
       <Head />
-
-      <SearchAppBar />
-      <Box
-        sx={{
-          background: "url(/header.webp) no-repeat",
-          height: matches ? "100px" : "350px",
-          width: "100%",
-          backgroundSize: "cover",
-          backgroundPositionY: "25%",
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          "&:before": {
-            content: `" "`,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0, 0, 0, .7)",
-            display: "block",
-            position: "absolute",
-            top: 0,
-            left: 0,
-          },
-        }}
-      >
-        <SearchInput />
-      </Box>
+      <Header />
       <main className={styles.main}>
         <Grid container justifyContent="center">
           <Grid item xs={11} lg={6} xl={5}>
@@ -100,7 +81,7 @@ const Home: NextPage = () => {
                 mt: 8,
               }}
             >
-              <Grid item xs={12} md={6} sx={{ mb: { xs: theme.spacing(3) }}}>
+              <Grid item xs={12} md={6} sx={{ mb: { xs: theme.spacing(3) } }}>
                 <Typography
                   variant="h1"
                   sx={{
@@ -142,28 +123,31 @@ const Home: NextPage = () => {
                 <Typography variant="h1" sx={headlineSx}>
                   Hartă
                 </Typography>
-                <Box sx={{ mb: 3 }}>
+                <Box sx={{ mb: 3, display: "flex" }}>
                   <ToggleButtonGroup
-                    value={"uats"}
+                    value={selectedLayer}
                     exclusive
-                    onChange={() => {}}
+                    onChange={selectLayer}
                     aria-label="text alignment"
                   >
-                    <ToggleButton value="uats" aria-label="left aligned">
+                    <ToggleButton
+                      value={CovidMapLayers.UATS}
+                      aria-label="left aligned"
+                    >
                       <FontAwesomeIcon icon={faTh} />
                     </ToggleButton>
-                    <ToggleButton value="counties" aria-label="centered">
+                    <ToggleButton
+                      value={CovidMapLayers.COUNTIES}
+                      aria-label="centered"
+                    >
                       <FontAwesomeIcon icon={faThLarge} />
-                    </ToggleButton>
-                    <ToggleButton value="labeled" aria-label="right aligned">
-                      <FontAwesomeIcon icon={faFont} />
                     </ToggleButton>
                   </ToggleButtonGroup>
                 </Box>
               </Grid>
               <Grid item xs={12}>
                 <Box sx={{ height: "600px", position: "relative" }}>
-                  <DynamicCovidMap layers={[CovidMapLayers.UATS, CovidMapLayers.COUNTIES ]} />
+                  <DynamicCovidMap layers={[selectedLayer]} />
                 </Box>
               </Grid>
             </Grid>

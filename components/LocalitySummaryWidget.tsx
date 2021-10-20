@@ -99,7 +99,7 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
             mb: 0,
           }}
         >
-          {number.toFixed(2)}‰
+          Rată de incidență {number.toFixed(2)}‰
         </Typography>
       </CardMedia>
       <Divider variant="middle" />

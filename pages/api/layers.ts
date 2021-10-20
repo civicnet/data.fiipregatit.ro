@@ -32,6 +32,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Layers | ErrorResponse>
 ) {
+
+  const { county, siruta } = req.query;
+
+  if (county && siruta) {
+    return res.status(500).json({ error: true });
+  }
+
   if (!uatFeatures.length || !countyFeatures.length) {
     const [uatResponse, countyResponse] = await Promise.all([
       fetch(UATS_URL),
@@ -48,6 +55,14 @@ export default async function handler(
   let minUat;
   let maxUat;
   for (const feature of uatFeatures) {
+    if (siruta && feature.properties?.natcode !== siruta) {
+      continue;
+    }
+
+    if (county && feature.properties?.county !== county) {
+      continue;
+    }
+
     const data = Data.find((d) => d.siruta === feature.properties?.natcode);
     if (!data) {
       continue;
@@ -77,6 +92,10 @@ export default async function handler(
   let minCounty;
   let maxCounty;
   for (const feature of countyFeatures) {
+    if (county && feature.properties?.name !== county) {
+      continue;
+    }
+
     const data = Data.filter((d) => d.county === feature.properties?.name);
     if (!data.length) {
       continue;
