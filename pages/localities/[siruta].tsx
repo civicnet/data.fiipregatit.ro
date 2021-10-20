@@ -97,6 +97,7 @@ const LocalityPage: NextPage = () => {
                       <DynamicCovidMap
                         layers={[CovidMapLayers.UATS]}
                         county={locality.county}
+                        siruta={locality.siruta}
                         viewState={{
                           latitude: centroid.geometry.coordinates[1] || 0, 
                           longitude: centroid.geometry.coordinates[0] || 0, 

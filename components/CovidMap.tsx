@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import DeckGL from "@deck.gl/react";
 import { GeoJsonLayer } from "@deck.gl/layers";
+import { TextLayer } from "@deck.gl/layers";
 import { StaticMap } from "react-map-gl";
 import chroma from "chroma-js";
 import { Layers } from "../pages/api/layers";
@@ -27,6 +28,7 @@ import {
   faMapPin,
   faSyringe,
 } from "@fortawesome/free-solid-svg-icons";
+import centroid from "@turf/centroid";
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -53,11 +55,11 @@ export enum CovidMapLayers {
 }
 
 type Props = {
-  viewState?: typeof INITIAL_VIEW_STATE;
+  viewState?: Partial<typeof INITIAL_VIEW_STATE>;
   layers?: CovidMapLayers[];
-  county?: string,
-  siruta?: string,
-} 
+  county?: string;
+  siruta?: string;
+};
 
 export default function CovidMap({
   viewState = INITIAL_VIEW_STATE,
@@ -65,36 +67,32 @@ export default function CovidMap({
   county,
   siruta,
 }: Props) {
-  if (county && siruta) {
-    throw new Error(`Can only specify county or UAT`);
-  }
-
   const [layersData, setLayersData] = useState<Layers>();
-
   const [hoverInfo, setHoverInfo] =
     useState<HoverInfo<Layers["uats"][0] | Layers["counties"][0]>>();
 
   const fetchLayers = useCallback(async () => {
     let url = `/api/layers`;
     if (county) {
-      url = `${url}?county=${county}`;  
-    } else if (siruta) {
+      url = `${url}?county=${county}`;
+    } else if (siruta && !county) {
       url = `${url}?siruta=${siruta}`;
     }
 
     const data = await fetch(url);
     const response: Layers = await data.json();
     setLayersData(response);
-  }, []);
+  }, [siruta, county]);
 
   useEffect(() => {
     fetchLayers();
-  }, []);
+  }, [siruta, county]);
 
   if (!layersData) {
     return <Skeleton width="100%" height="100%" sx={{ transform: "unset" }} />;
   }
 
+  const characters = "aăâbcdefghiîjklmnopqrsștțuvwxyz";
   const layersToRender: unknown[] = [
     new GeoJsonLayer({
       id: "uats-layer",
@@ -132,6 +130,43 @@ export default function CovidMap({
       getLineWidth: 1,
       onHover: (info: HoverInfo<Layers["counties"][0]>) => setHoverInfo(info),
     }),
+    new TextLayer({
+      id: "text-layer",
+      data: layersData.uats,
+      pickable: false,
+      getPosition: (d: typeof layersData.uats[0]) => {
+        const coords = centroid(d);
+        return [coords.geometry.coordinates[0], coords.geometry.coordinates[1]];
+      },
+      getText: (d: typeof layersData.uats[0]) => d.properties.name,
+      getSize: 14,
+      getColor: (d: typeof layersData.uats[0]) => {
+        let opacity = 0;
+        const hoverProps = hoverInfo?.object?.properties;
+        if (
+          hoverProps &&
+          "siruta" in hoverProps &&
+          hoverProps.siruta === d.properties.siruta
+        ) {
+          opacity = 255;
+        }
+        console.log(siruta)
+        if (siruta && (siruta === d.properties.siruta)) {
+          opacity = 255;
+        }
+
+        return [33, 33, 33, opacity];
+      },
+      getAngle: 0,
+      getTextAnchor: "middle",
+      getAlignmentBaseline: "center",
+      visible: layers.includes(CovidMapLayers.UATS),
+      fontFamily: "Roboto, sans-serif",
+      characterSet: `${characters}${characters.toUpperCase()} 123456890-`,
+      updateTriggers: {
+        getColor: [hoverInfo, siruta]
+      }
+    }),
   ];
 
   return (
@@ -152,6 +187,7 @@ export default function CovidMap({
             pointerEvents: "none",
             left: hoverInfo.x,
             top: hoverInfo.y,
+            width: 250,
           }}
         >
           <CardHeader
