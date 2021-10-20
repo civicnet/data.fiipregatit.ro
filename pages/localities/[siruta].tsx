@@ -28,6 +28,8 @@ import dynamic from "next/dynamic";
 import { CovidMapLayers } from "../../components/CovidMap";
 import turfCentroid from "@turf/centroid";
 import { Feature, Point, Properties } from "@turf/helpers";
+import TrackedLocalitiesCTA from "../../components/TrackedLocalitiesCTA";
+import Headline from "../../components/Headline";
 
 const DynamicCovidMap = dynamic(() => import("../../components/CovidMap"), {
   ssr: false,
@@ -61,33 +63,18 @@ const LocalityPage: NextPage = () => {
     fetchLocality();
   }, [siruta]);
 
-  const headlineSx: SxProps<Theme> = {
-    textTransform: "uppercase",
-    textAlign: "center",
-    fontSize: "2rem",
-    mt: theme.spacing(6),
-    mb: theme.spacing(8),
-    "&:after": {
-      content: `" "`,
-      display: "block",
-      borderBottom: `5px solid ${theme.palette.primary.main}`,
-      width: "100px",
-      margin: "25px auto 15px",
-    },
-  };
-
   return (
     <div>
       <Head />
       <Header />
       <main>
         <Grid container justifyContent="center">
-          <Grid item xs={11} lg={6} xl={5}>
+          <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
             {(locality &&centroid) && (
               <>
-                <Typography variant="h1" sx={headlineSx}>
+                <Headline>
                   {labelForLocality(locality)}
-                </Typography>
+                </Headline>
                 <Grid container spacing={2} sx={{ margin: "0 auto" }}>
                   <Grid item xs={12} md={6}>
                     <LocalitySummaryWidget locality={locality} />
@@ -111,6 +98,7 @@ const LocalityPage: NextPage = () => {
                 </Grid>
               </>
             )}
+            <TrackedLocalitiesCTA />
           </Grid>
         </Grid>
       </main>

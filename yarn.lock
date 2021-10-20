@@ -237,7 +237,7 @@
   resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.7.5.tgz#2c40f81449a4e554e9fc6396910ed4843ec2be50"
   integrity sha512-igX9a37DR2ZPGYtV6suZ6whr8pTFtyHL3K/oLUotxpSVO2ASaprmAe2Dkq7tBo7CRY7MMDrAa9nuQP9/YG8FxQ==
 
-"@emotion/react@^11.4.1":
+"@emotion/react@11.4.1", "@emotion/react@^11.4.1":
   version "11.4.1"
   resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.4.1.tgz#a1b0b767b5bad57515ffb0cad9349614d27f4d57"
   integrity sha512-pRegcsuGYj4FCdZN6j5vqCALkNytdrKw3TZMekTzNXixRg4wkLsU5QEaBG5LC6l01Vppxlp7FE3aTHpIG5phLg==
@@ -865,6 +865,27 @@
   integrity sha512-1Ol5cH8MQqIrGNgU4NCBj2cw1qiXYfHP1QCFX+u/xyrvgwLkPrOGkdSYMzw4VKTjJzNae4i7urOTf2m2hduZzQ==
   dependencies:
     "@babel/runtime" "^7.0.0"
+
+"@reactour/mask@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@reactour/mask/-/mask-0.2.2.tgz#fa837200973959b83f3e3c06480b2f6e42d76d97"
+  integrity sha512-mSwZiue7KtfKv3ga6J3tWl/tToHUoKmHDdOlKGTSSWdfB078FFZ8dwZfHvbJFDkkwE8cCofUwpFumUCT112AWw==
+  dependencies:
+    "@emotion/react" "11.4.1"
+    "@reactour/utils" "*"
+
+"@reactour/utils@*", "@reactour/utils@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@reactour/utils/-/utils-0.2.1.tgz#ab3b7038faf685ee160fa7c76256970b13002b15"
+  integrity sha512-HiMH304EMOIBN0sO3zZhqxaujJvJdQLnCOjvHOqM4Az8rtul4N9uTIYQ4QyMwvEZ1Mko/INlpQv6y2sBFRmzhA==
+  dependencies:
+    "@rooks/use-mutation-observer" "4.11.2"
+    resize-observer-polyfill "1.5.1"
+
+"@rooks/use-mutation-observer@4.11.2":
+  version "4.11.2"
+  resolved "https://registry.yarnpkg.com/@rooks/use-mutation-observer/-/use-mutation-observer-4.11.2.tgz#a0466c4338e0a4487ea19253c86bcd427c29f4af"
+  integrity sha512-vpsdrZdr6TkB1zZJcHx+fR1YC/pHs2BaqcuYiEGjBVbwY5xcC49+h0hAUtQKHth3oJqXfIX/Ng8S7s5HFHdM/A==
 
 "@rushstack/eslint-patch@^1.0.6":
   version "1.0.8"

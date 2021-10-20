@@ -14,6 +14,7 @@ import {
   ListItem,
   ListItemText,
   Skeleton,
+  Tooltip,
   useTheme,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -32,20 +33,39 @@ import {
   TrendingDown,
   TrendingFlat,
 } from "@mui/icons-material";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
+import { useRect } from "@reactour/utils";
+import Mask from "@reactour/mask";
+import { trackedLocalitiesState } from "../store/trackedLocalitiesState";
+import { useRecoilState } from "recoil";
 
 type Props = {
+  tourStarted: boolean;
   style?: React.CSSProperties;
 };
 
-export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
+export default function LocalitySummaryBookmarkCTA({
+  tourStarted,
+  ...rest
+}: Props) {
   const [locality, setRandomLocality] = useState<Locality>();
   const [loadingLocality, setLoadingLocality] = useState(false);
-
+  const [isOpen, setIsOpen] = useState(tourStarted);
+  const [updater, setUpdater] = useState([]);
   const [currentLocationActive, setCurrentLocationActive] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
 
+  const [trackedLocalities, setTrackedLocalities] = useRecoilState(trackedLocalitiesState);
   const theme = useTheme();
+
+  const refBookmarkButton = useRef(null);
+  const sizes = useRect(refBookmarkButton);
+
+  useEffect(() => {
+    const cb = () => setUpdater([]);
+    window.addEventListener("scroll", cb);
+    return () => window.removeEventListener("scroll", cb);
+  }, []);
 
   const getCurrentLocation = useCallback(() => {
     if (!currentLocationActive) {
@@ -105,80 +125,106 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
     trend = <TrendingDown />;
   }
 
-  return (
-    <Card sx={{ width: 345 }} variant="outlined" {...rest}>
-      <CardHeader
-        avatar={
-          <Avatar
-            sx={{
-              bgcolor: SeverityLevelColor[getSeverityLevel(locality)],
-              fontSize: ".6rem",
-            }}
-            aria-label="recipe"
-          >
-            {trend}
-          </Avatar>
-        }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
-        title={locality.uat}
-        subheader={locality.county}
-      />
-      <CardMedia sx={{ height: 100, position: "relative" }}>
-        <Box
-          sx={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          <SimpleLineChart series={locality.data} />
-        </Box>
+  const trackLocality = () => {
+    if (!locality || trackedLocalities.includes(locality.siruta)) {
+      return;
+    }
+    
+    setTrackedLocalities([...trackedLocalities, locality.siruta]);
+  }
 
-        <Typography
-          gutterBottom
-          variant="subtitle2"
-          component="div"
-          sx={{
-            fontFamily: "Roboto, sans-serif",
-            position: "absolute",
-            bottom: theme.spacing(2),
-            left: theme.spacing(2),
-            mb: 0,
-          }}
-        >
-          Rată de incidență {number.toFixed(2)}‰
-        </Typography>
-      </CardMedia>
-      <Divider variant="middle" />
-      <CardContent>
-        <List dense={true}>
-          <ListItem>
-            <ListItemText primary="Spitalizați" secondary={42} />
-            <ListItemText primary="Paturi libere ATI" secondary={1} />
-          </ListItem>
-        </List>
-      </CardContent>
-      <CardActions disableSpacing>
-        <IconButton
-          onClick={fetchRandom}
-          disabled={!!locality && loadingLocality}
-        >
-          <Refresh />
-        </IconButton>
-        <IconButton
-          onClick={getCurrentLocation}
-          disabled={currentLocationActive || locationLoading}
-        >
-          <MyLocationOutlined />
-        </IconButton>
-        <IconButton onClick={fetchRandom} sx={{ ml: "auto" }}>
-          <BookmarkAddOutlined />
-        </IconButton>
-      </CardActions>
-    </Card>
+  return (
+    <>
+      <Card sx={{ width: 345 }} variant="outlined" {...rest}>
+        <CardHeader
+          avatar={
+            <Avatar
+              sx={{
+                bgcolor: SeverityLevelColor[getSeverityLevel(locality)],
+                fontSize: ".6rem",
+              }}
+              aria-label="recipe"
+            >
+              {trend}
+            </Avatar>
+          }
+          action={
+            <IconButton aria-label="settings">
+              <MoreVertIcon />
+            </IconButton>
+          }
+          title={locality.uat}
+          subheader={locality.county}
+        />
+        <CardMedia sx={{ height: 100, position: "relative" }}>
+          <Box
+            sx={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <SimpleLineChart series={locality.data} />
+          </Box>
+
+          <Typography
+            gutterBottom
+            variant="subtitle2"
+            component="div"
+            sx={{
+              fontFamily: "Roboto, sans-serif",
+              position: "absolute",
+              bottom: theme.spacing(2),
+              left: theme.spacing(2),
+              mb: 0,
+            }}
+          >
+            Rată de incidență {number.toFixed(2)}‰
+          </Typography>
+        </CardMedia>
+        <Divider variant="middle" />
+        <CardContent>
+          <List dense={true}>
+            <ListItem>
+              <ListItemText primary="Spitalizați" secondary={42} />
+              <ListItemText primary="Paturi libere ATI" secondary={1} />
+            </ListItem>
+          </List>
+        </CardContent>
+        <CardActions disableSpacing>
+          <Tooltip title="Altă localitate">
+            <IconButton
+              onClick={fetchRandom}
+              disabled={!!locality && loadingLocality}
+              size="large"
+            >
+              <Refresh />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Caută localitatea mea">
+            <IconButton
+              onClick={getCurrentLocation}
+              disabled={currentLocationActive || locationLoading}
+              size="large"
+            >
+              <MyLocationOutlined />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={`Marchează ${locality.uat}, jud. ${locality.county}`}>
+            <IconButton
+              onClick={trackLocality}
+              sx={{ ml: "auto" }}
+              size="large"
+              ref={refBookmarkButton}
+            >
+              <BookmarkAddOutlined />
+              {isOpen ? (
+                <Mask sizes={sizes} onClick={() => setIsOpen(false)} />
+              ) : null}
+            </IconButton>
+          </Tooltip>
+        </CardActions>
+      </Card>
+    </>
   );
 }

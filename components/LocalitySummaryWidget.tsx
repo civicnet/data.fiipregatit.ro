@@ -26,11 +26,14 @@ import { linearRegression } from "simple-statistics";
 import {
   BookmarkAdd,
   BookmarkAddOutlined,
+  BookmarkRemoveOutlined,
   Launch,
   Rule,
   TrendingDown,
   TrendingFlat,
 } from "@mui/icons-material";
+import { useRecoilState } from "recoil";
+import { trackedLocalitiesState } from "../store/trackedLocalitiesState";
 
 type Props = {
   style?: React.CSSProperties;
@@ -38,10 +41,13 @@ type Props = {
 };
 
 export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
+  const [trackedLocalities, setTrackedLocalities] = useRecoilState(
+    trackedLocalitiesState
+  );
   const theme = useTheme();
 
   const number = getNewestLocalityData(locality) || 0;
-  
+
   const data = Object.entries(locality.data);
   const regression = linearRegression(
     data.map(([key, value]) => [new Date(key).valueOf(), value])
@@ -53,6 +59,22 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
   } else if (regression.b < 0) {
     trend = <TrendingDown />;
   }
+
+  const trackLocality = () => {
+    if (!locality || trackedLocalities.includes(locality.siruta)) {
+      return;
+    }
+
+    setTrackedLocalities([...trackedLocalities, locality.siruta]);
+  };
+
+  const untrackLocality = () => {
+    if (!locality || !trackedLocalities.includes(locality.siruta)) {
+      return;
+    }
+
+    setTrackedLocalities(trackedLocalities.filter((l) => l !== locality.siruta));
+  };
 
   return (
     <Card sx={{ maxWidth: 345 }} variant="outlined" {...rest}>
@@ -112,9 +134,15 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
         </List>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton>
-          <BookmarkAddOutlined />
-        </IconButton>
+        {!trackedLocalities.includes(locality.siruta) ? (
+          <IconButton onClick={trackLocality}>
+            <BookmarkAddOutlined />
+          </IconButton>
+        ) : (
+          <IconButton onClick={untrackLocality}>
+            <BookmarkRemoveOutlined />
+          </IconButton>
+        )}
         <IconButton href="https://fiipregatit.ro" target="_blank">
           <Rule />
         </IconButton>

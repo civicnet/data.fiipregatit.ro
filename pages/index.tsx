@@ -33,6 +33,8 @@ import Header from "../components/Header";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
 import { SeverityLevelDescription } from "../lib/SeverityLevelDescription";
 import { SeverityLevel } from "../lib/SeverityLevel";
+import TrackedLocalitiesCTA from "../components/TrackedLocalitiesCTA";
+import Headline from "../components/Headline";
 
 const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
   ssr: false,
@@ -73,56 +75,13 @@ const Home: NextPage = () => {
       <Header />
       <main className={styles.main}>
         <Grid container justifyContent="center">
-          <Grid item xs={11} lg={6} xl={5}>
-            <Grid
-              container
-              justifyContent="space-between"
-              sx={{
-                mt: 8,
-              }}
-            >
-              <Grid item xs={12} md={6} sx={{ mb: { xs: theme.spacing(3) } }}>
-                <Typography
-                  variant="h1"
-                  sx={{
-                    fontSize: "1.7rem",
-                    fontWeight: 500,
-                    pb: 6,
-                    maxWidth: theme.spacing(60),
-                    "&:after": {
-                      content: `" "`,
-                      display: "block",
-                      width: "50%",
-                      borderBottom: `5px solid ${theme.palette.primary.main}`,
-                      mt: 2,
-                    },
-                  }}
-                >
-                  <BookmarkAddOutlined sx={{ mr: 2 }} />
-                  Marchează localitățile de interes personal pentru access ușor
-                  mai târziu
-                </Typography>
-                <Typography>
-                  Informațiile sunt salvate doar pe dispozitivul tău, fără a fi
-                  necesară crearea unui cont. Va trebui să recreezi lista de
-                  localități marcate pe fiecare dispozitiv nou folosit.
-                </Typography>
-              </Grid>
-              <Grid
-                item
-                sx={{ display: "flex", alignItems: "center", gap: 2 }}
-                xs={12}
-                md={6}
-                justifyContent="end"
-              >
-                <LocalitySummaryBookmarkCTA />
-              </Grid>
-            </Grid>
+          <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
+            <TrackedLocalitiesCTA />
             <Grid container sx={{ margin: `${theme.spacing(8)} auto` }}>
               <Grid item xs={12}>
-                <Typography variant="h1" sx={headlineSx}>
+                <Headline>
                   Hartă
-                </Typography>
+                </Headline>
                 <Box sx={{ mb: 3, display: "flex" }}>
                   <ToggleButtonGroup
                     value={selectedLayer}

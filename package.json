@@ -17,6 +17,8 @@
     "@fortawesome/react-fontawesome": "^0.1.15",
     "@mui/icons-material": "^5.0.3",
     "@mui/material": "^5.0.3",
+    "@reactour/mask": "^0.2.2",
+    "@reactour/utils": "^0.2.1",
     "@turf/centroid": "^6.5.0",
     "@turf/turf": "^6.5.0",
     "@visx/bounds": "^2.1.2",
