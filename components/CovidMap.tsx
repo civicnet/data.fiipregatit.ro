@@ -107,10 +107,25 @@ export default function CovidMap({
         const hex = SeverityLevelColor[getSeverityLevel(d.properties.rate)];
         return chroma(hex).rgb();
       },
-      getLineColor: () => [0, 0, 0, 128],
+      getLineColor: (d: typeof layersData.uats[0]) => {
+        let opacity = 64;
+        const hoverProps = hoverInfo?.object?.properties;
+        if (
+          hoverProps &&
+          "siruta" in hoverProps &&
+          hoverProps.siruta === d.properties.siruta
+        ) {
+          opacity = 255;
+        }
+
+        return [33, 33, 33, opacity];
+      },
       getLineWidth: 1,
       visible: layers.includes(CovidMapLayers.UATS),
       onHover: (info: HoverInfo<Layers["uats"][0]>) => setHoverInfo(info),
+      updateTriggers: {
+        getLineColor: [hoverInfo, siruta],
+      },
     }),
     new GeoJsonLayer({
       id: "counties-layer",
@@ -131,7 +146,25 @@ export default function CovidMap({
       onHover: (info: HoverInfo<Layers["counties"][0]>) => setHoverInfo(info),
     }),
     new TextLayer({
-      id: "text-layer",
+      id: "county-label-layer",
+      data: layersData.counties,
+      pickable: false,
+      getPosition: (d: typeof layersData.uats[0]) => {
+        const coords = centroid(d);
+        return [coords.geometry.coordinates[0], coords.geometry.coordinates[1]];
+      },
+      getText: (d: typeof layersData.uats[0]) => d.properties.name,
+      getSize: 14,
+      getColor: [33, 33, 33, 255],
+      getAngle: 0,
+      getTextAnchor: "middle",
+      getAlignmentBaseline: "center",
+      visible: layers.includes(CovidMapLayers.COUNTIES),
+      fontFamily: "Roboto, sans-serif",
+      characterSet: "auto", // `${characters}${characters.toUpperCase()} 123456890-`,,
+    }),
+    new TextLayer({
+      id: "uat-label-layer",
       data: layersData.uats,
       pickable: false,
       getPosition: (d: typeof layersData.uats[0]) => {
@@ -150,8 +183,7 @@ export default function CovidMap({
         ) {
           opacity = 255;
         }
-        console.log(siruta)
-        if (siruta && (siruta === d.properties.siruta)) {
+        if (siruta && siruta === d.properties.siruta) {
           opacity = 255;
         }
 
@@ -160,12 +192,47 @@ export default function CovidMap({
       getAngle: 0,
       getTextAnchor: "middle",
       getAlignmentBaseline: "center",
-      visible: layers.includes(CovidMapLayers.UATS),
+      visible: layers.includes(CovidMapLayers.UATS) && (county || siruta),
       fontFamily: "Roboto, sans-serif",
-      characterSet: `${characters}${characters.toUpperCase()} 123456890-`,
+      characterSet: "auto", // `${characters}${characters.toUpperCase()} 123456890-`,
       updateTriggers: {
-        getColor: [hoverInfo, siruta]
-      }
+        getColor: [hoverInfo, siruta],
+      },
+    }),
+    new TextLayer({
+      id: "uat-rate-label-layer",
+      data: layersData.uats,
+      pickable: false,
+      getPosition: (d: typeof layersData.uats[0]) => {
+        const coords = centroid(d);
+        return [coords.geometry.coordinates[0], coords.geometry.coordinates[1]];
+      },
+      getPixelOffset: [0, 20],
+      getText: (d: typeof layersData.uats[0]) =>
+        `${d.properties.rate.toFixed(2)}‰` || "",
+      getSize: 14,
+      getColor: (d: typeof layersData.uats[0]) => {
+        let opacity = 0;
+        const hoverProps = hoverInfo?.object?.properties;
+        if (
+          hoverProps &&
+          "siruta" in hoverProps &&
+          hoverProps.siruta === d.properties.siruta
+        ) {
+          opacity = 255;
+        }
+
+        return [33, 33, 33, opacity];
+      },
+      getAngle: 0,
+      getTextAnchor: "middle",
+      getAlignmentBaseline: "center",
+      visible: layers.includes(CovidMapLayers.UATS) && (county || siruta),
+      fontFamily: "Roboto, sans-serif",
+      characterSet: "auto", // `123456890.`,
+      updateTriggers: {
+        getColor: [hoverInfo, siruta],
+      },
     }),
   ];
 
@@ -179,7 +246,7 @@ export default function CovidMap({
         mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         mapStyle="mapbox://styles/claudiuc/ck4rj1g758emo1do5slyr0i09"
       />
-      {hoverInfo?.object && (
+      {hoverInfo?.object && !(siruta || county) && (
         <Card
           style={{
             position: "absolute",
