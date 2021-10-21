@@ -2,7 +2,6 @@ import { useTheme } from "@mui/material";
 import { PatternCircles } from "@visx/pattern";
 import { ParentSize } from "@visx/responsive";
 import Bar from "@visx/shape/lib/shapes/Bar";
-import { nanoid } from "nanoid";
 import React, { JSXElementConstructor, ReactElement } from "react";
 
 type Props = {

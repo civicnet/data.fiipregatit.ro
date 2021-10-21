@@ -5,7 +5,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { trackedLocalitiesState } from "../store/trackedLocalitiesState";
 import { LocalityWithFeature } from "../types/Locality";
-import Headline from "./Headline";
 import LocalitySummaryBookmarkCTA from "./LocalitySummaryBookmarkCTA";
 import LocalitySummaryWidget from "./LocalitySummaryWidget";
 import SkeletonCard from "./SkeletonCard";
@@ -108,21 +107,19 @@ export default function TrackedLocalitiesCTA() {
         xs={12}
         sm={6}
       >
-        <LocalitySummaryBookmarkCTA tourStarted={false} />
+        <LocalitySummaryBookmarkCTA />
       </Grid>
     </Grid>
   ) : (
     <>
-      <Headline>Localități marcate</Headline>
       <Grid
         container
-        justifyContent="space-between"
         spacing={2}
         sx={{
           mt: 8,
         }}
       >
-        {true
+        {trackedLocalities.length
           ? trackedLocalities.map((l) => {
               return (
                 <Grid

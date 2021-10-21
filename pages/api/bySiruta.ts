@@ -1,10 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { Feature } from "@turf/turf";
-import Fuse from "fuse.js";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Data from "../../data/octombrie.json";
 import { UATS_URL, COUNTIES_URL } from "../../lib/constants";
-import { Locality, LocalityWithFeature } from "../../types/Locality";
+import { LocalityWithFeature } from "../../types/Locality";
 
 type ErrorResponse = { error: boolean };
 

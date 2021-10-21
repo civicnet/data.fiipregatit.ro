@@ -6,7 +6,6 @@ import Typography from "@mui/material/Typography";
 import {
   Avatar,
   Box,
-  Button,
   CardActions,
   CardHeader,
   Divider,
@@ -17,12 +16,10 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  Popover,
   Tooltip,
   useTheme,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { LocalityWithFeature } from "../types/Locality";
 import { getNewestLocalityData } from "../lib/getNewestLocalityData";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
@@ -30,7 +27,6 @@ import { getSeverityLevel } from "../lib/getSeverityLevel";
 import SimpleLineChart from "./SimpleLineChart";
 import { linearRegression } from "simple-statistics";
 import {
-  BookmarkAdd,
   BookmarkAddOutlined,
   BookmarkRemoveOutlined,
   Code,

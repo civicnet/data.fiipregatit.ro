@@ -1,22 +1,15 @@
 import {
   Box,
-  Grid,
   Skeleton,
-  Theme,
-  Typography,
-  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import type { NextPage } from "next";
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import { Head } from "../components/Head";
 import { useRouter } from "next/dist/client/router";
-import { LocalityWithFeature } from "../types/Locality";
 import Header from "../components/Header";
 import dynamic from "next/dynamic";
 import { CovidMapLayers } from "../components/CovidMap";
-import turfCentroid from "@turf/centroid";
-import { Feature, Point, Properties } from "@turf/helpers";
 import Footer from "../components/Footer";
 
 const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {

@@ -1,10 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import Data from "../../data/octombrie.json";
-import { COUNTIES_URL, UATS_URL } from "../../lib/constants";
-import { LocalityWithFeature } from "../../types/Locality";
+import { UATS_URL } from "../../lib/constants";
 import { Feature } from "@turf/turf";
-import { random } from "../../lib/random";
 import XLSX from "xlsx";
 import nodeFetch from "node-fetch";
 import https from "https";

@@ -3,42 +3,23 @@ import {
   Button,
   Grid,
   Skeleton,
-  Stack,
   Theme,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
-  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import type { NextPage } from "next";
-import React, { MouseEvent, useState } from "react";
+import React from "react";
 import styles from "../styles/Home.module.css";
 import { Head } from "../components/Head";
 import LocalitiesByIncidence from "../components/LocalitiesByIncidence";
 import { SxProps } from "@mui/system";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCoffee,
-  faFont,
-  faHandPaper,
-  faHeart,
-  faTh,
-  faThLarge,
-} from "@fortawesome/free-solid-svg-icons";
-import LocalitySummaryBookmarkCTA from "../components/LocalitySummaryBookmarkCTA";
 import dynamic from "next/dynamic";
 import { CovidMapLayers } from "../components/CovidMap";
-import { ArrowRight, BookmarkAddOutlined } from "@mui/icons-material";
+import { ArrowRight } from "@mui/icons-material";
 import Header from "../components/Header";
-import { SeverityLevelColor } from "../lib/SeverityLevelColor";
-import { SeverityLevelDescription } from "../lib/SeverityLevelDescription";
-import { SeverityLevel } from "../lib/SeverityLevel";
 import TrackedLocalitiesCTA from "../components/TrackedLocalitiesCTA";
 import Headline from "../components/Headline";
 import Footer from "../components/Footer";
-import LocalitiesByTrend from "../components/LocalitiesByTrend";
-import { Trend } from "./api/byTrend";
 
 const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
   ssr: false,

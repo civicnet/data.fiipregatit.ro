@@ -2,23 +2,12 @@ import {
   Box,
   Grid,
   Skeleton,
-  Theme,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import type { NextPage } from "next";
 import React, { useCallback, useEffect, useState } from "react";
-import SearchAppBar from "../../components/SearchAppBar";
 import { Head } from "../../components/Head";
-import SearchInput from "../../components/SearchInput";
-import { SxProps } from "@mui/system";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCoffee,
-  faHandPaper,
-  faHeart,
-} from "@fortawesome/free-solid-svg-icons";
 import LocalitySummaryWidget from "../../components/LocalitySummaryWidget";
 import { useRouter } from "next/dist/client/router";
 import { LocalityWithFeature } from "../../types/Locality";

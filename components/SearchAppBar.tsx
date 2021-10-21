@@ -6,7 +6,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
 import HomeIcon from "@mui/icons-material/Home";
-import { IconButton, Stack, useMediaQuery } from "@mui/material";
+import { Stack, useMediaQuery } from "@mui/material";
 import { useRouter } from "next/dist/client/router";
 import styles from "./SearchAppBar.module.css";
 import { Menu } from "@mui/icons-material";

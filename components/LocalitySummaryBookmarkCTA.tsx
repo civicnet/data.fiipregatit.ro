@@ -26,46 +26,30 @@ import { getSeverityLevel } from "../lib/getSeverityLevel";
 import SimpleLineChart from "./SimpleLineChart";
 import { linearRegression } from "simple-statistics";
 import {
-  BookmarkAdd,
   BookmarkAddOutlined,
   MyLocationOutlined,
   Refresh,
   TrendingDown,
   TrendingFlat,
 } from "@mui/icons-material";
-import { useCallback, useState, useEffect, useRef } from "react";
-import { useRect } from "@reactour/utils";
-import Mask from "@reactour/mask";
+import { useCallback, useState, useEffect } from "react";
 import { trackedLocalitiesState } from "../store/trackedLocalitiesState";
 import { useRecoilState } from "recoil";
 
 type Props = {
-  tourStarted: boolean;
   style?: React.CSSProperties;
 };
 
 export default function LocalitySummaryBookmarkCTA({
-  tourStarted,
   ...rest
 }: Props) {
   const [locality, setRandomLocality] = useState<Locality>();
   const [loadingLocality, setLoadingLocality] = useState(false);
-  const [isOpen, setIsOpen] = useState(tourStarted);
-  const [updater, setUpdater] = useState([]);
   const [currentLocationActive, setCurrentLocationActive] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
 
   const [trackedLocalities, setTrackedLocalities] = useRecoilState(trackedLocalitiesState);
   const theme = useTheme();
-
-  const refBookmarkButton = useRef(null);
-  const sizes = useRect(refBookmarkButton);
-
-  useEffect(() => {
-    const cb = () => setUpdater([]);
-    window.addEventListener("scroll", cb);
-    return () => window.removeEventListener("scroll", cb);
-  }, []);
 
   const getCurrentLocation = useCallback(() => {
     if (!currentLocationActive) {
@@ -215,12 +199,8 @@ export default function LocalitySummaryBookmarkCTA({
               onClick={trackLocality}
               sx={{ ml: "auto" }}
               size="large"
-              ref={refBookmarkButton}
             >
               <BookmarkAddOutlined />
-              {isOpen ? (
-                <Mask sizes={sizes} onClick={() => setIsOpen(false)} />
-              ) : null}
             </IconButton>
           </Tooltip>
         </CardActions>
