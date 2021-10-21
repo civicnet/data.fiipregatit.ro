@@ -98,6 +98,11 @@ export default function SearchAppBar() {
                   <HomeIcon />
                 </a>
               </Link>
+              <Link href="/despre">
+                <a className={clsx(styles.navItem, router.pathname === "/despre" && styles.navItemActive)}>
+                  Despre
+                </a>
+              </Link>
               <Link href="/harta">
                 <a className={clsx(styles.navItem, router.pathname === "/harta" && styles.navItemActive)}>
                   Hartă
