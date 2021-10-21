@@ -42,6 +42,10 @@ const theme = createTheme({
 });
 
 export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric) {
+  if (!("gtag" in window)) {
+    return;
+  }
+  
   (window as WindowWithGA).gtag('event', name, {
     event_category:
       label === 'web-vital' ? 'Web Vitals' : 'Next.js custom metric',
