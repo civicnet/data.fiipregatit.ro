@@ -92,7 +92,9 @@ export default async function handler(
 
       const firstPass = compare(u.properties?.name, needle);
       if (firstPass) {
-        if (compare(u.properties?.county, zipped.Judet)) {
+        if (
+          compare(u.properties?.county, zipped.Judet.replace("MUNICIPIUL ", ""))
+        ) {
           return true;
         }
       }
@@ -100,7 +102,9 @@ export default async function handler(
       // Still fails for "câmpie", ie: "sânpetru de câmpie"
       const secondPass = compare(u.properties?.name, needle.replace("Â", "Î"));
       if (secondPass) {
-        if (compare(u.properties?.county, zipped.Judet)) {
+        if (
+          compare(u.properties?.county, zipped.Judet.replace("MUNICIPIUL ", ""))
+        ) {
           return true;
         }
       }
