@@ -5,17 +5,17 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/system";
 import React, { CSSProperties, useCallback, useEffect, useState } from "react";
+import { ByTrendResponse, Trend } from "../pages/api/byTrend";
 import { LocalityWithFeature } from "../types/Locality";
 import LocalitySummaryWidget from "./LocalitySummaryWidget";
 import SkeletonCard from "./SkeletonCard";
 
 type Props = {
-  low: number;
-  high: number;
+  trend: Trend;
   style?: CSSProperties;
 };
 
-export default function LocalitiesByIncidence({ low, high, ...rest }: Props) {
+export default function LocalitiesByTrend({ trend, ...rest }: Props) {
   const [localities, setLocalities] = useState<LocalityWithFeature[]>([]);
 
   const theme = useTheme();
@@ -25,15 +25,15 @@ export default function LocalitiesByIncidence({ low, high, ...rest }: Props) {
 
   const fetchData = useCallback(async () => {
     const response = await fetch(
-      `/api/byIncidence?low=${low}&high=${high}&limit=${limit}`
+      `/api/byTrend?trend=${trend}&limit=${limit}`
     );
-    const json = await response.json();
-    setLocalities(json);
-  }, [localities, high, low, limit]);
+    const json = await response.json() as ByTrendResponse;
+    setLocalities(json.uats);
+  }, [localities, trend, limit]);
 
   useEffect(() => {
     fetchData();
-  }, [high, low, limit]);
+  }, [trend, limit]);
 
   if (!localities.length) {
     return (

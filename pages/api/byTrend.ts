@@ -7,22 +7,26 @@ import { Locality, LocalityWithFeature } from "../../types/Locality";
 import * as turf from "@turf/turf";
 import { getNewestLocalityData } from "../../lib/getNewestLocalityData";
 import { Feature, GeoJSONObject, simplify } from "@turf/turf";
+import { linearRegression } from "simple-statistics";
+import { ByIncidenceOrder } from "./byIncidence";
 
 type ErrorResponse = { error: boolean };
 
-export enum ByIncidenceOrder {
-  LOW_TO_HIGH = "LOW_TO_HIGH",
-  HIGH_TO_LOW = "HIGH_TO_LOW",
+export enum Trend {
+  UP = "UP",
+  DOWN = "DOWN",
+  FLAT = "FLAT",
 }
 
+export type ByTrendResponse = { uats: LocalityWithFeature[]; total: number };
 let uatFeatures: Feature[] = [];
 let countyFeatures: Feature[] = [];
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<LocalityWithFeature[] | ErrorResponse>
+  res: NextApiResponse<ByTrendResponse | ErrorResponse>
 ) {
-  let { low, high } = req.query;
+  const { trend } = req.query;
 
   const order = req.query.order || ByIncidenceOrder.HIGH_TO_LOW;
   const limit = Number(req.query.limit) || 10;
@@ -41,9 +45,16 @@ export default async function handler(
 
   let localities = [];
   for (const locality of Data) {
-    const incidence = getNewestLocalityData(locality) || 0;
+    const data = Object.entries(locality.data);
+    const regression = linearRegression(
+      data.map(([key, value]) => [new Date(key).valueOf(), value])
+    );
 
-    if (incidence > Number(low) && incidence < Number(high)) {
+    if (trend === Trend.UP && regression.b < 0) {
+      localities.push(locality);
+    } else if (trend === Trend.FLAT && regression.b === 0) {
+      localities.push(locality);
+    } else if (trend === Trend.DOWN && regression.b > 0) {
       localities.push(locality);
     }
   }
@@ -55,6 +66,7 @@ export default async function handler(
     return order === ByIncidenceOrder.HIGH_TO_LOW ? bNum - aNum : aNum - bNum;
   });
 
+  const totalCount = localities.length;
   const sliced = localities.slice(0, limit);
   const response = [];
 
@@ -67,13 +79,13 @@ export default async function handler(
     );
 
     if (!uat) {
-       throw new Error(`No UAT match for ${locality.siruta}`);
+      throw new Error(`No UAT match for ${locality.siruta}`);
     }
 
     if (!county) {
-       throw new Error(`No UAT match for ${locality.county}`);
+      throw new Error(`No UAT match for ${locality.county}`);
     }
-    
+
     response.push({
       ...locality,
       features: {
@@ -83,5 +95,8 @@ export default async function handler(
     });
   }
 
-  return res.status(200).json(response);
+  return res.status(200).json({
+    uats: response,
+    total: totalCount,
+  });
 }

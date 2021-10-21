@@ -37,6 +37,8 @@ import { SeverityLevel } from "../lib/SeverityLevel";
 import TrackedLocalitiesCTA from "../components/TrackedLocalitiesCTA";
 import Headline from "../components/Headline";
 import Footer from "../components/Footer";
+import LocalitiesByTrend from "../components/LocalitiesByTrend";
+import { Trend } from "./api/byTrend";
 
 const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
   ssr: false,
