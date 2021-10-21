@@ -131,7 +131,7 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
                 horizontal: "left",
               }}
             >
-              <MenuItem onClick={handleClose}>
+              <MenuItem href="https://fiipregatit.ro" target="_blank">
                 <ListItemIcon>
                   <Rule fontSize="small" />
                 </ListItemIcon>
