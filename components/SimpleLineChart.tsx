@@ -44,7 +44,7 @@ export default function SimpleLineChart({ series }: Props) {
               curve={curveNatural}
               data={data}
               x={(d) => xScale.range([16, parent.width - 16])(getX(d)) ?? 0}
-              y={(d) => yScale.range([16, parent.height - 16])(getY(d)) ?? 0}
+              y={(d) => yScale.range([parent.height - 16, 16])(getY(d)) ?? 0}
               stroke="#f99"
               strokeWidth={3}
               shapeRendering="geometricPrecision"

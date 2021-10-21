@@ -39,6 +39,7 @@ import {
   Share,
   TrendingDown,
   TrendingFlat,
+  TrendingUp,
 } from "@mui/icons-material";
 import { useRecoilState } from "recoil";
 import { trackedLocalitiesState } from "../store/trackedLocalitiesState";
@@ -77,11 +78,11 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
     data.map(([key, value]) => [new Date(key).valueOf(), value])
   );
 
-  let trend = <TrendingUpIcon />;
+  let trend = <TrendingDown />;
   if (regression.b === 0) {
     trend = <TrendingFlat />;
   } else if (regression.b < 0) {
-    trend = <TrendingDown />;
+    trend = <TrendingUp />;
   }
 
   const trackLocality = () => {
