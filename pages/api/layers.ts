@@ -27,7 +27,9 @@ export type Layers = {
   counties: Feature<Geometry | GeometryCollection, CountyProperties>[];
   uatRange: [number, number];
   countyRange: [number, number];
+  lastUpdatedAt: number;
 };
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Layers | ErrorResponse>
@@ -54,6 +56,7 @@ export default async function handler(
   let uats: Layers["uats"] = [];
   let minUat;
   let maxUat;
+  let lastUpdatedAt = 0;
   for (const feature of uatFeatures) {
     if (siruta && feature.properties?.natcode !== siruta) {
       continue;
@@ -66,6 +69,19 @@ export default async function handler(
     const data = Data.find((d) => d.siruta === feature.properties?.natcode);
     if (!data) {
       continue;
+    }
+
+    const lastUpdate = Object.keys(data.data).reduce((acc, k) => {
+      const timestamp = new Date(k as string).valueOf();
+      if (timestamp > acc) {
+        return timestamp;
+      }
+
+      return acc;
+    }, 0);
+
+    if (lastUpdate > lastUpdatedAt) {
+      lastUpdatedAt = lastUpdate;
     }
 
     const rate = getNewestLocalityData(data) || 0;
@@ -128,5 +144,6 @@ export default async function handler(
     counties,
     uatRange: [minUat || 0, maxUat || 0],
     countyRange: [minCounty || 0, maxCounty || 0],
+    lastUpdatedAt,
   });
 }

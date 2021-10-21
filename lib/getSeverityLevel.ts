@@ -17,13 +17,15 @@ export function getSeverityLevel(
     return SeverityLevel.NONE;
   }
 
-  if (rate < 3) {
+  if (rate < 3 && rate > 0) {
     return SeverityLevel.LOW;
   } else if (rate >= 3 && rate < 6) {
     return SeverityLevel.MIDDLE;
   } else if (rate >= 6 && rate < 7.5) {
     return SeverityLevel.HIGH;
-  }
+  } else if (rate === 0) {
+    return SeverityLevel.NONE;
+  };
 
-  return SeverityLevel.CRITICAL;
+  return SeverityLevel.CRITICAL
 }

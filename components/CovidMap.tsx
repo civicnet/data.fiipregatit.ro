@@ -15,6 +15,8 @@ import {
   CardContent,
   CardHeader,
   Divider,
+  Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemAvatar,
@@ -23,6 +25,7 @@ import {
   Skeleton,
   ToggleButton,
   ToggleButtonGroup,
+  Tooltip,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -36,6 +39,12 @@ import {
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
 import centroid from "@turf/centroid";
+import { SeverityLevelDescription } from "../lib/SeverityLevelDescription";
+import { SeverityLevel } from "../lib/SeverityLevel";
+import CalendarPicker from "@mui/lab/CalendarPicker";
+import { LocalizationProvider } from "@mui/lab";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import { ChevronLeft } from "@mui/icons-material";
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -76,6 +85,9 @@ export default function CovidMap({
 }: Props) {
   const [selectedLayer, setSelectedLayer] = useState(layer);
   const [layersData, setLayersData] = useState<Layers>();
+  /* const [date, setDate] = useState<Date | null>(new Date());
+  const [minDate, setMinDate] = useState();
+  const [maxDate, setMaxDate] = useState<Date | null>(new Date()); */
   const [hoverInfo, setHoverInfo] =
     useState<HoverInfo<Layers["uats"][0] | Layers["counties"][0]>>();
 
@@ -254,13 +266,74 @@ export default function CovidMap({
 
   return (
     <>
-      <Box
+      <Paper
         sx={{
+          p: 2,
           mb: 3,
-          display: "flex",
           position: "absolute",
           top: theme.spacing(2),
           left: theme.spacing(2),
+          zIndex: 10,
+        }}
+      >
+        <List dense={true} disablePadding sx={{ mt: 0 }}>
+          <ListItem>
+            <ListItemText
+              primary={
+                <Typography sx={{ fontWeight: "bold" }}>Legendă</Typography>
+              }
+              secondary={`
+                ${new Date(
+                  layersData.lastUpdatedAt
+                ).toLocaleDateString("ro-RO", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              `}
+            />
+          </ListItem>
+          <Divider />
+          {Object.entries(SeverityLevelColor).map(([k, v]) => {
+            return (
+              <ListItem disablePadding>
+                <ListItemAvatar
+                  sx={{
+                    minWidth: theme.spacing(3),
+                  }}
+                >
+                  <Avatar
+                    sx={{
+                      background: v,
+                      height: "1rem",
+                      width: "1rem",
+                    }}
+                  >
+                    {" "}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={SeverityLevelDescription[k as SeverityLevel]}
+                />
+              </ListItem>
+            );
+          })}
+        </List>
+        {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <CalendarPicker
+            date={date}
+            onChange={(newDate) => setDate(newDate)}
+          />
+        </LocalizationProvider> */}
+      </Paper>
+
+      <Box
+        sx={{
+          p: 2,
+          mb: 3,
+          position: "absolute",
+          top: theme.spacing(2),
+          right: theme.spacing(2),
           zIndex: 10,
         }}
       >
@@ -271,12 +344,24 @@ export default function CovidMap({
           aria-label="text alignment"
           sx={{ background: "#fff" }}
         >
-          <ToggleButton value={CovidMapLayers.UATS} aria-label="left aligned">
-            <FontAwesomeIcon icon={faTh} />
-          </ToggleButton>
-          <ToggleButton value={CovidMapLayers.COUNTIES} aria-label="centered">
-            <FontAwesomeIcon icon={faThLarge} />
-          </ToggleButton>
+          <Tooltip title="Vezi localități">
+            <ToggleButton
+              value={CovidMapLayers.UATS}
+              aria-label="left aligned"
+              selected={selectedLayer === CovidMapLayers.UATS}
+            >
+              <FontAwesomeIcon icon={faTh} />
+            </ToggleButton>
+          </Tooltip>
+          <Tooltip title="Vezi județe">
+            <ToggleButton
+              value={CovidMapLayers.COUNTIES}
+              aria-label="centered"
+              selected={selectedLayer === CovidMapLayers.COUNTIES}
+            >
+              <FontAwesomeIcon icon={faThLarge} />
+            </ToggleButton>
+          </Tooltip>
         </ToggleButtonGroup>
       </Box>
       <DeckGL

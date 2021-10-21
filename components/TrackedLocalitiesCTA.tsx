@@ -119,33 +119,31 @@ export default function TrackedLocalitiesCTA() {
           mt: 8,
         }}
       >
-        {trackedLocalities.length
-          ? trackedLocalities.map((l) => {
-              return (
-                <Grid
-                  item
-                  xs={12}
-                  md={6}
-                  lg={4}
-                  key={`tracked-locality-${l.siruta}`}
-                >
-                  <LocalitySummaryWidget locality={l} />
-                </Grid>
-              );
-            })
-          : Array(3)
-              .fill(1)
-              .map((_, idx) => (
-                <Grid
-                  item
-                  xs={12}
-                  md={6}
-                  lg={4}
-                  key={`tracked-locality-skeleton-${idx}`}
-                >
-                  <SkeletonCard />
-                </Grid>
-              ))}
+        {trackedLocalities.length ? (
+          trackedLocalities.map((l) => {
+            return (
+              <Grid
+                item
+                xs={12}
+                md={6}
+                lg={4}
+                key={`tracked-locality-${l.siruta}`}
+              >
+                <LocalitySummaryWidget locality={l} />
+              </Grid>
+            );
+          })
+        ) : (
+          <Grid
+            item
+            xs={12}
+            md={6}
+            lg={4}
+            key={`tracked-locality-skeleton-1`}
+          >
+            <SkeletonCard />
+          </Grid>
+        )}
       </Grid>
     </>
   );
