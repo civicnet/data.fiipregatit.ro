@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Grid,
   Skeleton,
   Stack,
@@ -28,13 +29,14 @@ import {
 import LocalitySummaryBookmarkCTA from "../components/LocalitySummaryBookmarkCTA";
 import dynamic from "next/dynamic";
 import { CovidMapLayers } from "../components/CovidMap";
-import { BookmarkAddOutlined } from "@mui/icons-material";
+import { ArrowRight, BookmarkAddOutlined } from "@mui/icons-material";
 import Header from "../components/Header";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
 import { SeverityLevelDescription } from "../lib/SeverityLevelDescription";
 import { SeverityLevel } from "../lib/SeverityLevel";
 import TrackedLocalitiesCTA from "../components/TrackedLocalitiesCTA";
 import Headline from "../components/Headline";
+import Footer from "../components/Footer";
 
 const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
   ssr: false,
@@ -42,7 +44,6 @@ const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
 });
 
 const Home: NextPage = () => {
-  const [selectedLayer, setSelectedLayer] = useState(CovidMapLayers.COUNTIES);
   const theme = useTheme();
 
   const headlineSx: SxProps<Theme> = {
@@ -65,49 +66,27 @@ const Home: NextPage = () => {
     marginBottom: theme.spacing(3),
   };
 
-  const selectLayer = (_e: MouseEvent, layer: CovidMapLayers) => {
-    setSelectedLayer(layer);
-  };
-
   return (
     <div className={styles.container}>
       <Head />
       <Header />
-      <main className={styles.main}>
+      <main className={styles.main} style={{ marginBottom: theme.spacing(8) }}>
         <Grid container justifyContent="center">
           <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
             <TrackedLocalitiesCTA />
             <Grid container sx={{ margin: `${theme.spacing(8)} auto` }}>
               <Grid item xs={12}>
-                <Headline>
-                  Hartă
-                </Headline>
-                <Box sx={{ mb: 3, display: "flex" }}>
-                  <ToggleButtonGroup
-                    value={selectedLayer}
-                    exclusive
-                    onChange={selectLayer}
-                    aria-label="text alignment"
-                  >
-                    <ToggleButton
-                      value={CovidMapLayers.UATS}
-                      aria-label="left aligned"
-                    >
-                      <FontAwesomeIcon icon={faTh} />
-                    </ToggleButton>
-                    <ToggleButton
-                      value={CovidMapLayers.COUNTIES}
-                      aria-label="centered"
-                    >
-                      <FontAwesomeIcon icon={faThLarge} />
-                    </ToggleButton>
-                  </ToggleButtonGroup>
-                </Box>
+                <Headline>Hartă</Headline>
               </Grid>
               <Grid item xs={12}>
                 <Box sx={{ height: "600px", position: "relative" }}>
-                  <DynamicCovidMap layers={[selectedLayer]} />
+                  <DynamicCovidMap layer={CovidMapLayers.COUNTIES} />
                 </Box>
+              </Grid>
+              <Grid item xs={12} sx={{ textAlign: "center" }}>
+                <Button startIcon={<ArrowRight />} href="/harta" variant="outlined" sx={{ mt: 4 }}>
+                  Vezi harta
+                </Button>
               </Grid>
             </Grid>
             {/* <TrackedLocalitiesSlider /> */}
@@ -141,51 +120,7 @@ const Home: NextPage = () => {
           </Grid>
         </Grid>
       </main>
-      <footer
-        style={{
-          background: "#4c4c4c",
-          padding: theme.spacing(2),
-          marginTop: theme.spacing(8),
-        }}
-      >
-        <Grid container justifyContent="center">
-          <Grid item>
-            <Typography sx={{ color: "#bbb", fontSize: "12px" }}>
-              Creat cu{" "}
-              <Typography
-                sx={{ "&:hover": { color: "#f00" } }}
-                component="span"
-              >
-                <FontAwesomeIcon icon={faHeart} />
-              </Typography>{" "}
-              și <FontAwesomeIcon icon={faCoffee} /> de
-            </Typography>
-            <img
-              src="/CivicNetLogoNegative.svg"
-              width="150px"
-              height="35.6167px"
-            />
-            <Typography
-              sx={{
-                color: "#bbb",
-                fontSize: "12px",
-                "&:hover": { textDecoration: "underline" },
-              }}
-            >
-              <a
-                href="https://www.paypal.com/donate/?cmd=_s-xclick&hosted_button_id=DE43VS64MPJB8&source=url"
-                target="_blank"
-              >
-                <FontAwesomeIcon
-                  icon={faHandPaper}
-                  style={{ marginRight: theme.spacing(1) }}
-                />
-                Contribuie și tu
-              </a>
-            </Typography>
-          </Grid>
-        </Grid>
-      </footer>
+      <Footer />
     </div>
   );
 };

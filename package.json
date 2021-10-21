@@ -31,6 +31,7 @@
     "@visx/shape": "^2.1.2",
     "@visx/text": "^2.1.2",
     "chroma-js": "^2.1.2",
+    "clsx": "^1.1.1",
     "common-tags": "^1.8.0",
     "deck.gl": "^8.6.0",
     "fuse.js": "^6.4.6",

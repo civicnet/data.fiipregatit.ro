@@ -6,13 +6,19 @@ import Typography from "@mui/material/Typography";
 import {
   Avatar,
   Box,
+  Button,
   CardActions,
   CardHeader,
   Divider,
   IconButton,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
+  Menu,
+  MenuItem,
+  Popover,
+  Tooltip,
   useTheme,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -27,13 +33,16 @@ import {
   BookmarkAdd,
   BookmarkAddOutlined,
   BookmarkRemoveOutlined,
+  Code,
   Launch,
   Rule,
+  Share,
   TrendingDown,
   TrendingFlat,
 } from "@mui/icons-material";
 import { useRecoilState } from "recoil";
 import { trackedLocalitiesState } from "../store/trackedLocalitiesState";
+import { useRouter } from "next/router";
 
 type Props = {
   style?: React.CSSProperties;
@@ -41,10 +50,25 @@ type Props = {
 };
 
 export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
   const [trackedLocalities, setTrackedLocalities] = useRecoilState(
     trackedLocalitiesState
   );
+
   const theme = useTheme();
+  const router = useRouter();
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const id = !!anchorEl ? "simple-popover" : undefined;
 
   const number = getNewestLocalityData(locality) || 0;
 
@@ -73,7 +97,9 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
       return;
     }
 
-    setTrackedLocalities(trackedLocalities.filter((l) => l !== locality.siruta));
+    setTrackedLocalities(
+      trackedLocalities.filter((l) => l !== locality.siruta)
+    );
   };
 
   return (
@@ -91,12 +117,70 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
           </Avatar>
         }
         action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
+          <>
+            <IconButton aria-label="settings" onClick={handleMenuOpen}>
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+              id={id}
+              open={!!anchorEl}
+              anchorEl={anchorEl}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+            >
+              <MenuItem onClick={handleClose}>
+                <ListItemIcon>
+                  <Rule fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Vezi restricții</ListItemText>
+              </MenuItem>
+              <MenuItem
+                onClick={() => router.push(`/localities/${locality.siruta}`)}
+              >
+                <ListItemIcon>
+                  <Launch fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Deschide</ListItemText>
+              </MenuItem>
+              {!trackedLocalities.includes(locality.siruta) ? (
+                <MenuItem onClick={trackLocality}>
+                  <ListItemIcon>
+                    <BookmarkAddOutlined fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Abonează-te</ListItemText>
+                </MenuItem>
+              ) : (
+                <MenuItem onClick={untrackLocality}>
+                  <ListItemIcon>
+                    <BookmarkRemoveOutlined fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Dezabonează-te</ListItemText>
+                </MenuItem>
+              )}
+              <MenuItem onClick={handleClose}>
+                <ListItemIcon>
+                  <Share fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Distribuie</ListItemText>
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={handleClose}>
+                <ListItemIcon>
+                  <Code fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Embed</ListItemText>
+              </MenuItem>
+            </Menu>
+          </>
         }
-        title={locality.uat}
-        subheader={locality.county}
+        title={<a href={`/localities/${locality.siruta}`}>{locality.uat}</a>}
+        subheader={<a href={`/localities/${locality.siruta}`}>{locality.county}</a>}
       />
       <CardMedia sx={{ height: 100, position: "relative" }}>
         <Box
@@ -135,20 +219,33 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
       </CardContent>
       <CardActions disableSpacing>
         {!trackedLocalities.includes(locality.siruta) ? (
-          <IconButton onClick={trackLocality}>
-            <BookmarkAddOutlined />
-          </IconButton>
+          <Tooltip
+            title={`Abonează-te la "${locality.uat}, jud. ${locality.county}"`}
+          >
+            <IconButton onClick={trackLocality}>
+              <BookmarkAddOutlined />
+            </IconButton>
+          </Tooltip>
         ) : (
-          <IconButton onClick={untrackLocality}>
-            <BookmarkRemoveOutlined />
-          </IconButton>
+          <Tooltip title={`Dezabonează-te`}>
+            <IconButton onClick={untrackLocality}>
+              <BookmarkRemoveOutlined />
+            </IconButton>
+          </Tooltip>
         )}
-        <IconButton href="https://fiipregatit.ro" target="_blank">
-          <Rule />
-        </IconButton>
-        <IconButton sx={{ ml: "auto" }}>
-          <Launch />
-        </IconButton>
+        <Tooltip title={`Vezi restricții`}>
+          <IconButton href="https://fiipregatit.ro" target="_blank">
+            <Rule />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title={`Deschide`}>
+          <IconButton
+            sx={{ ml: "auto" }}
+            href={`/localities/${locality.siruta}`}
+          >
+            <Launch />
+          </IconButton>
+        </Tooltip>
       </CardActions>
     </Card>
   );

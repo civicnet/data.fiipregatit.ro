@@ -10,6 +10,7 @@ import { SeverityLevelColor } from "../lib/SeverityLevelColor";
 import { getSeverityLevel } from "../lib/getSeverityLevel";
 import {
   Avatar,
+  Box,
   Card,
   CardContent,
   CardHeader,
@@ -18,8 +19,12 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Paper,
   Skeleton,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,6 +32,8 @@ import {
   faHeadSideCough,
   faMapPin,
   faSyringe,
+  faTh,
+  faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
 import centroid from "@turf/centroid";
 
@@ -56,21 +63,23 @@ export enum CovidMapLayers {
 
 type Props = {
   viewState?: Partial<typeof INITIAL_VIEW_STATE>;
-  layers?: CovidMapLayers[];
+  layer?: CovidMapLayers;
   county?: string;
   siruta?: string;
 };
 
 export default function CovidMap({
   viewState = INITIAL_VIEW_STATE,
-  layers = [CovidMapLayers.COUNTIES],
+  layer = CovidMapLayers.COUNTIES,
   county,
   siruta,
 }: Props) {
+  const [selectedLayer, setSelectedLayer] = useState(layer);
   const [layersData, setLayersData] = useState<Layers>();
   const [hoverInfo, setHoverInfo] =
     useState<HoverInfo<Layers["uats"][0] | Layers["counties"][0]>>();
 
+  const theme = useTheme();
   const fetchLayers = useCallback(async () => {
     let url = `/api/layers`;
     if (county) {
@@ -91,6 +100,13 @@ export default function CovidMap({
   if (!layersData) {
     return <Skeleton width="100%" height="100%" sx={{ transform: "unset" }} />;
   }
+
+  const selectLayer = (
+    _e: React.MouseEvent<HTMLElement, MouseEvent>,
+    layer: CovidMapLayers
+  ) => {
+    setSelectedLayer(layer);
+  };
 
   const characters = "aăâbcdefghiîjklmnopqrsștțuvwxyz";
   const layersToRender: unknown[] = [
@@ -121,7 +137,7 @@ export default function CovidMap({
         return [33, 33, 33, opacity];
       },
       getLineWidth: 1,
-      visible: layers.includes(CovidMapLayers.UATS),
+      visible: selectedLayer === CovidMapLayers.UATS,
       onHover: (info: HoverInfo<Layers["uats"][0]>) => setHoverInfo(info),
       updateTriggers: {
         getLineColor: [hoverInfo, siruta],
@@ -140,7 +156,7 @@ export default function CovidMap({
         const hex = SeverityLevelColor[getSeverityLevel(d.properties.rate)];
         return chroma(hex).rgb();
       },
-      visible: layers.includes(CovidMapLayers.COUNTIES),
+      visible: selectedLayer === CovidMapLayers.COUNTIES,
       getLineColor: () => [0, 0, 0, 128],
       getLineWidth: 1,
       onHover: (info: HoverInfo<Layers["counties"][0]>) => setHoverInfo(info),
@@ -159,7 +175,7 @@ export default function CovidMap({
       getAngle: 0,
       getTextAnchor: "middle",
       getAlignmentBaseline: "center",
-      visible: layers.includes(CovidMapLayers.COUNTIES),
+      visible: selectedLayer === CovidMapLayers.COUNTIES,
       fontFamily: "Roboto, sans-serif",
       characterSet: "auto", // `${characters}${characters.toUpperCase()} 123456890-`,,
     }),
@@ -192,7 +208,7 @@ export default function CovidMap({
       getAngle: 0,
       getTextAnchor: "middle",
       getAlignmentBaseline: "center",
-      visible: layers.includes(CovidMapLayers.UATS) && (county || siruta),
+      visible: selectedLayer === CovidMapLayers.UATS && (county || siruta),
       fontFamily: "Roboto, sans-serif",
       characterSet: "auto", // `${characters}${characters.toUpperCase()} 123456890-`,
       updateTriggers: {
@@ -227,7 +243,7 @@ export default function CovidMap({
       getAngle: 0,
       getTextAnchor: "middle",
       getAlignmentBaseline: "center",
-      visible: layers.includes(CovidMapLayers.UATS) && (county || siruta),
+      visible: selectedLayer === CovidMapLayers.UATS && (county || siruta),
       fontFamily: "Roboto, sans-serif",
       characterSet: "auto", // `123456890.`,
       updateTriggers: {
@@ -237,74 +253,106 @@ export default function CovidMap({
   ];
 
   return (
-    <DeckGL
-      initialViewState={viewState}
-      controller={true}
-      layers={layersToRender}
-    >
-      <StaticMap
-        mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
-        mapStyle="mapbox://styles/claudiuc/ck4rj1g758emo1do5slyr0i09"
-      />
-      {hoverInfo?.object && !(siruta || county) && (
-        <Card
-          style={{
-            position: "absolute",
-            zIndex: 1,
-            pointerEvents: "none",
-            left: hoverInfo.x,
-            top: hoverInfo.y,
-            width: 250,
-          }}
+    <>
+      <Box
+        sx={{
+          mb: 3,
+          display: "flex",
+          position: "absolute",
+          top: theme.spacing(2),
+          left: theme.spacing(2),
+          zIndex: 10,
+        }}
+      >
+        <ToggleButtonGroup
+          value={selectedLayer}
+          exclusive
+          onChange={selectLayer}
+          aria-label="text alignment"
+          sx={{ background: "#fff" }}
         >
-          <CardHeader
-            avatar={
-              <Avatar>
-                <FontAwesomeIcon icon={faMapPin} />
-              </Avatar>
-            }
-            title={hoverInfo.object.properties.name}
-            subheader={
-              "county" in hoverInfo.object.properties
-                ? hoverInfo.object.properties.county
-                : ""
-            }
-          />
-          <CardContent>
-            <List disablePadding dense>
-              <ListItem alignItems="flex-start" disablePadding>
-                <ListItemAvatar>
-                  <Avatar>
-                    <FontAwesomeIcon icon={faHeadSideCough} />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Rata de infectare (incidența)"
-                  secondary={`${hoverInfo.object.properties.rate.toFixed(2)}‰`}
-                />
-              </ListItem>
-              <Divider variant="inset" component="li" />
-              <ListItem alignItems="flex-start" disablePadding>
-                <ListItemAvatar>
-                  <Avatar>
-                    <FontAwesomeIcon icon={faSyringe} />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary="Rata de vaccinare" secondary="35%" />
-              </ListItem>
-              <Divider variant="inset" component="li" />
-              <ListItem alignItems="flex-start" disablePadding>
-                <ListItemAvatar>
-                  <Avatar>
-                    <FontAwesomeIcon icon={faBed} />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary="Paturi ATI disponibile" secondary={1} />
-              </ListItem>
-            </List>
-          </CardContent>
-        </Card>
-      )}
-    </DeckGL>
+          <ToggleButton value={CovidMapLayers.UATS} aria-label="left aligned">
+            <FontAwesomeIcon icon={faTh} />
+          </ToggleButton>
+          <ToggleButton value={CovidMapLayers.COUNTIES} aria-label="centered">
+            <FontAwesomeIcon icon={faThLarge} />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
+      <DeckGL
+        initialViewState={viewState}
+        controller={true}
+        layers={layersToRender}
+      >
+        <StaticMap
+          mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
+          mapStyle="mapbox://styles/claudiuc/ck4rj1g758emo1do5slyr0i09"
+        />
+        {hoverInfo?.object && !(siruta || county) && (
+          <Card
+            style={{
+              position: "absolute",
+              zIndex: 1,
+              pointerEvents: "none",
+              left: hoverInfo.x,
+              top: hoverInfo.y,
+              width: 250,
+            }}
+          >
+            <CardHeader
+              avatar={
+                <Avatar>
+                  <FontAwesomeIcon icon={faMapPin} />
+                </Avatar>
+              }
+              title={hoverInfo.object.properties.name}
+              subheader={
+                "county" in hoverInfo.object.properties
+                  ? hoverInfo.object.properties.county
+                  : ""
+              }
+            />
+            <CardContent>
+              <List disablePadding dense>
+                <ListItem alignItems="flex-start" disablePadding>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <FontAwesomeIcon icon={faHeadSideCough} />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary="Rata de infectare (incidența)"
+                    secondary={`${hoverInfo.object.properties.rate.toFixed(
+                      2
+                    )}‰`}
+                  />
+                </ListItem>
+                <Divider variant="inset" component="li" />
+                <ListItem alignItems="flex-start" disablePadding>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <FontAwesomeIcon icon={faSyringe} />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary="Rata de vaccinare" secondary="35%" />
+                </ListItem>
+                <Divider variant="inset" component="li" />
+                <ListItem alignItems="flex-start" disablePadding>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <FontAwesomeIcon icon={faBed} />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary="Paturi ATI disponibile"
+                    secondary={1}
+                  />
+                </ListItem>
+              </List>
+            </CardContent>
+          </Card>
+        )}
+      </DeckGL>
+    </>
   );
 }

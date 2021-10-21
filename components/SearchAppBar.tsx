@@ -10,6 +10,8 @@ import { IconButton, Stack, useMediaQuery } from "@mui/material";
 import { useRouter } from "next/dist/client/router";
 import styles from "./SearchAppBar.module.css";
 import { Menu } from "@mui/icons-material";
+import clsx from "clsx";
+import Link from "next/link";
 
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
@@ -43,11 +45,6 @@ export default function SearchAppBar() {
   const router = useRouter();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const goHome = (e: React.MouseEvent) => {
-    e.preventDefault();
-    router.push("/");
-  };
-
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -72,9 +69,11 @@ export default function SearchAppBar() {
                 color: theme.palette.secondary.light,
               }}
             >
-              <a href="/" onClick={goHome}>
+              <Link href="/">
+              <a>
                 data.fiipregătit.ro
               </a>
+              </Link>
             </Typography>
             <Typography
               sx={{
@@ -94,19 +93,29 @@ export default function SearchAppBar() {
               spacing={2}
               sx={{ alignContent: "center", mr: 3, mb: "-46px" }}
             >
-              <a href="/" onClick={goHome} className={styles.navItem}>
-                <HomeIcon />
-              </a>
-              <a href="#" className={styles.navItem}>
-                Hartă
-              </a>
-              <a href="#" className={styles.navItem}>
+              <Link href="/">
+                <a className={clsx(styles.navItem, router.pathname === "/" && styles.navItemActive)}>
+                  <HomeIcon />
+                </a>
+              </Link>
+              <Link href="/harta">
+                <a className={clsx(styles.navItem, router.pathname === "/harta" && styles.navItemActive)}>
+                  Hartă
+                </a>
+              </Link>
+              <a
+                href="https://fiipregatit.ro"
+                target="_blank"
+                className={styles.navItem}
+              >
                 fiipregatit.ro
               </a>
             </Stack>
           )}
           {matches && (
-              <Menu  sx={{ color: "#fff", height: 44, width: 44, cursor: "pointer" }} />
+            <Menu
+              sx={{ color: "#fff", height: 44, width: 44, cursor: "pointer" }}
+            />
           )}
         </Toolbar>
       </AppBar>
