@@ -29,7 +29,7 @@ const MapPage: NextPage = () => {
       <Header />
       <main>
         <Box sx={{ width: "100%", position: "relative", height: `calc(100vh - 375px)` }}>
-          <DynamicCovidMap layer={CovidMapLayers.UATS} />
+          <DynamicCovidMap layer={CovidMapLayers.HOSPITALS} />
         </Box>
       </main>
       <Footer />

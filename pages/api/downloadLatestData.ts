@@ -4,7 +4,7 @@ import { UATS_URL } from "../../lib/constants";
 import { Feature } from "@turf/turf";
 import XLSX from "xlsx";
 import nodeFetch from "node-fetch";
-import https from "https";
+import { fetchLatestWorkbook } from "./lib/fetchLatestWorkbook";
 
 type ErrorResponse = { error: boolean; msg?: string; data?: unknown };
 
@@ -12,44 +12,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Record<string, unknown>[] | ErrorResponse>
 ) {
-  const httpsAgent = new https.Agent({
-    rejectUnauthorized: false,
-  });
-
-  const dataset = await nodeFetch(
-    `https://data.gov.ro/api/3/action/package_show?id=transparenta-covid`,
-    {
-      agent: httpsAgent,
-    }
-  );
-
-  const datasetJSON = (await dataset.json()) as any;
-  if (!datasetJSON.success) {
-    return res.status(500).json({
-      error: true,
-      msg: "Unable to fetch data from data.gov.ro API",
-    });
-  }
-
-  const { resources } = datasetJSON.result;
-  let latestResource = resources[0];
-  const updatedAt = (resource: Record<string, unknown>): number =>
-    new Date(resource["last_modified"] as number).valueOf();
-
-  for (const res of resources) {
-    if (updatedAt(res) > updatedAt(latestResource)) {
-      latestResource = res;
-    }
-  }
-
-  const document = await nodeFetch(latestResource["datagovro_download_url"], {
-    agent: httpsAgent,
-  });
-  const body = await document.buffer();
-
-  const workbook = XLSX.read(body);
+  const workbook = await fetchLatestWorkbook();
   const sheet = workbook.Sheets["incidenta"];
 
+  // TODO: use zipWorkSheet
   const rawData = XLSX.utils.sheet_to_json(sheet) as Record<string, unknown>[];
   const header = rawData[0];
   if (typeof header !== "object" || header === null) {

@@ -1,8 +1,8 @@
-/// app.js
 import React, { useCallback, useEffect, useState } from "react";
 import DeckGL from "@deck.gl/react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { TextLayer } from "@deck.gl/layers";
+import { ScatterplotLayer } from "@deck.gl/layers";
 import { StaticMap } from "react-map-gl";
 import chroma from "chroma-js";
 import { Layers } from "../pages/api/layers";
@@ -11,12 +11,7 @@ import { getSeverityLevel } from "../lib/getSeverityLevel";
 import {
   Avatar,
   Box,
-  Card,
-  CardContent,
-  CardHeader,
   Divider,
-  Drawer,
-  IconButton,
   List,
   ListItem,
   ListItemAvatar,
@@ -31,25 +26,22 @@ import {
 } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBed,
-  faHeadSideCough,
-  faMapPin,
-  faSyringe,
+  faHospitalSymbol,
   faTh,
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
 import centroid from "@turf/centroid";
 import { SeverityLevelDescription } from "../lib/SeverityLevelDescription";
 import { SeverityLevel } from "../lib/SeverityLevel";
-import CalendarPicker from "@mui/lab/CalendarPicker";
-import { LocalizationProvider } from "@mui/lab";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import { ChevronLeft } from "@mui/icons-material";
+import { Hospital } from "../pages/api/hospitals";
+import { getNewestData } from "../lib/getNewestData";
+import FeatureMapHovercard from "./FeatureMapHovercard";
+import HospitalMapHovercard from "./HospitalMapHovercard";
+import FeatureMapLegend from "./FeatureMapLegend";
+import HospitalsMapLegend from "./HospitalsMapLegend";
 
-// Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
-// Viewport settings
 const INITIAL_VIEW_STATE = {
   longitude: 24.82,
   latitude: 45.9,
@@ -58,17 +50,22 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
 };
 
-type HoverInfo<T extends Layers["counties"][0] | Layers["uats"][0]> = {
-  object: T;
-  x: number;
-  y: number;
-};
-
 export enum CovidMapLayers {
   UATS = "UATS",
   COUNTIES = "COUNTIES",
   LABELS = "LABELS",
+  HOSPITALS = "HOSPITALS",
 }
+
+export type HoverInfoCounty = Layers["counties"][0];
+export type HoverInfoUAT = Layers["uats"][0];
+export type HoverInfoObject = HoverInfoCounty | HoverInfoUAT | Hospital;
+
+export type HoverInfo<T extends HoverInfoObject = HoverInfoObject> = {
+  object: T;
+  x: number;
+  y: number;
+};
 
 type Props = {
   viewState?: Partial<typeof INITIAL_VIEW_STATE>;
@@ -79,19 +76,21 @@ type Props = {
 
 export default function CovidMap({
   viewState = INITIAL_VIEW_STATE,
-  layer = CovidMapLayers.COUNTIES,
+  layer = CovidMapLayers.HOSPITALS,
   county,
   siruta,
 }: Props) {
   const [selectedLayer, setSelectedLayer] = useState(layer);
   const [layersData, setLayersData] = useState<Layers>();
-  /* const [date, setDate] = useState<Date | null>(new Date());
-  const [minDate, setMinDate] = useState();
-  const [maxDate, setMaxDate] = useState<Date | null>(new Date()); */
-  const [hoverInfo, setHoverInfo] =
-    useState<HoverInfo<Layers["uats"][0] | Layers["counties"][0]>>();
+  const [hospitals, setHospitalData] = useState<Hospital[]>();
+  const [icuRange, setICURange] = useState<[number, number]>();
+  const [filteredHospitals, setFilteredHospitals] = useState(
+    Object.keys(SeverityLevel)
+  );
+  const [hoverInfo, setHoverInfo] = useState<HoverInfo<HoverInfoObject>>();
 
   const theme = useTheme();
+
   const fetchLayers = useCallback(async () => {
     let url = `/api/layers`;
     if (county) {
@@ -100,16 +99,28 @@ export default function CovidMap({
       url = `${url}?siruta=${siruta}`;
     }
 
-    const data = await fetch(url);
-    const response: Layers = await data.json();
-    setLayersData(response);
+    const [fetchedLayersData, hospitalData] = await Promise.all([
+      fetch(url),
+      fetch(`/api/hospitals`),
+    ]);
+
+    const [layersDataResponse, hospitalDataResponse] = await Promise.all([
+      fetchedLayersData.json(),
+      hospitalData.json(),
+    ]);
+
+    setLayersData(layersDataResponse);
+    setHospitalData(hospitalDataResponse.hospitals);
+
+    const { minICU, maxICU } = hospitalDataResponse.statistics;
+    setICURange([minICU, maxICU]);
   }, [siruta, county]);
 
   useEffect(() => {
     fetchLayers();
   }, [siruta, county]);
 
-  if (!layersData) {
+  if (!layersData || !hospitals) {
     return <Skeleton width="100%" height="100%" sx={{ transform: "unset" }} />;
   }
 
@@ -118,6 +129,76 @@ export default function CovidMap({
     layer: CovidMapLayers
   ) => {
     setSelectedLayer(layer);
+  };
+
+  const getCountForHospital = (d: Hospital): number => {
+    let countICU = getNewestData(d.data.icu);
+    let countInpatients = getNewestData(d.data.inpatient);
+
+    return Number(countICU) + Number(countInpatients);
+  };
+
+  const filterHospitals = (severity: SeverityLevel) => {
+    if (filteredHospitals.includes(severity)) {
+      setFilteredHospitals(filteredHospitals.filter((s) => s !== severity));
+    } else {
+      setFilteredHospitals([...filteredHospitals, severity]);
+    }
+  };
+  const limits = chroma.limits(
+    hospitals.map((h) => Number(getNewestData(h.data.icu))),
+    "e",
+    4
+  );
+
+  const mappedLimits = limits.reduce(
+    (acc, n, idx) => {
+      const currentKey = Object.keys(SeverityLevel)[idx] as SeverityLevel;
+      const previousKey = Object.keys(SeverityLevel)[idx - 1];
+
+      let previousCeiling = 0;
+      if (previousKey in acc) {
+        previousCeiling = acc[previousKey as keyof typeof acc][1];
+      }
+
+      return {
+        ...acc,
+        [SeverityLevel[currentKey]]: [previousCeiling, n],
+      };
+    },
+    { [SeverityLevel.NONE]: [0, 0] } as Record<SeverityLevel, [number, number]>
+  );
+
+  const severityForHospital = (d: Hospital): SeverityLevel => {
+    let sev = SeverityLevel.NONE;
+
+    if (getCountForHospital(d) === 0) {
+      sev = SeverityLevel.NONE;
+    }
+
+    let icuCount = getNewestData(d.data.icu);
+    if (typeof icuCount !== "number") {
+      icuCount = 0;
+    }
+    const count = Number(icuCount);
+
+    for (const [k, [low, high]] of Object.entries(mappedLimits)) {
+      if (count >= low && count <= high) {
+        sev = k as SeverityLevel;
+        break;
+      }
+    }
+
+    return sev;
+  };
+
+  const getScatterplotColor = (opacity: number) => (d: Hospital) => {
+    const sev = severityForHospital(d);
+    if (filteredHospitals.includes(sev)) {
+      return [...chroma(SeverityLevelColor.scatterplot[sev]).rgb(), opacity];
+    }
+
+    return [0, 0, 0, 0];
   };
 
   const characters = "aăâbcdefghiîjklmnopqrsștțuvwxyz";
@@ -132,16 +213,18 @@ export default function CovidMap({
       lineWidthScale: 10,
       lineWidthMinPixels: 1,
       getFillColor: (d: typeof layersData.uats[0]) => {
-        const hex = SeverityLevelColor[getSeverityLevel(d.properties.rate)];
+        const hex =
+          SeverityLevelColor.geojson[getSeverityLevel(d.properties.rate)];
         return chroma(hex).rgb();
       },
       getLineColor: (d: typeof layersData.uats[0]) => {
         let opacity = 64;
-        const hoverProps = hoverInfo?.object?.properties;
+        const obj = hoverInfo?.object;
         if (
-          hoverProps &&
-          "siruta" in hoverProps &&
-          hoverProps.siruta === d.properties.siruta
+          obj &&
+          "properties" in obj &&
+          "siruta" in obj.properties &&
+          obj.properties.siruta === d.properties.siruta
         ) {
           opacity = 255;
         }
@@ -165,7 +248,8 @@ export default function CovidMap({
       lineWidthScale: 10,
       lineWidthMinPixels: 1,
       getFillColor: (d: typeof layersData.counties[0]) => {
-        const hex = SeverityLevelColor[getSeverityLevel(d.properties.rate)];
+        const hex =
+          SeverityLevelColor.geojson[getSeverityLevel(d.properties.rate)];
         return chroma(hex).rgb();
       },
       visible: selectedLayer === CovidMapLayers.COUNTIES,
@@ -203,11 +287,12 @@ export default function CovidMap({
       getSize: 14,
       getColor: (d: typeof layersData.uats[0]) => {
         let opacity = 0;
-        const hoverProps = hoverInfo?.object?.properties;
+        const obj = hoverInfo?.object;
         if (
-          hoverProps &&
-          "siruta" in hoverProps &&
-          hoverProps.siruta === d.properties.siruta
+          obj &&
+          "properties" in obj &&
+          "siruta" in obj.properties &&
+          obj.properties.siruta === d.properties.siruta
         ) {
           opacity = 255;
         }
@@ -241,11 +326,12 @@ export default function CovidMap({
       getSize: 14,
       getColor: (d: typeof layersData.uats[0]) => {
         let opacity = 0;
-        const hoverProps = hoverInfo?.object?.properties;
+        const obj = hoverInfo?.object;
         if (
-          hoverProps &&
-          "siruta" in hoverProps &&
-          hoverProps.siruta === d.properties.siruta
+          obj &&
+          "properties" in obj &&
+          "siruta" in obj.properties &&
+          obj.properties.siruta === d.properties.siruta
         ) {
           opacity = 255;
         }
@@ -262,70 +348,43 @@ export default function CovidMap({
         getColor: [hoverInfo, siruta],
       },
     }),
+    new ScatterplotLayer({
+      id: "hospitals-icu-scatterplot-layer",
+      data: hospitals.filter((h) =>
+        filteredHospitals.includes(severityForHospital(h))
+      ),
+      pickable: true,
+      opacity: 1,
+      stroked: true,
+      filled: true,
+      radiusScale: 60,
+      radiusMinPixels: 6,
+      radiusMaxPixels: 80,
+      getPosition: (d: Hospital) => {
+        return [d.coordinates.lng, d.coordinates.lat];
+      },
+      getRadius: getCountForHospital,
+      getFillColor: getScatterplotColor(128),
+      getLineColor: getScatterplotColor(255),
+      lineWidthMinPixels: 2,
+      visible: selectedLayer === CovidMapLayers.HOSPITALS,
+      onHover: (info: HoverInfo<Hospital>) => setHoverInfo(info),
+    }),
   ];
 
   return (
     <>
-      <Paper
-        sx={{
-          p: 2,
-          mb: 3,
-          position: "absolute",
-          top: theme.spacing(2),
-          left: theme.spacing(2),
-          zIndex: 10,
-        }}
-      >
-        <List dense={true} disablePadding sx={{ mt: 0 }}>
-          <ListItem>
-            <ListItemText
-              primary={
-                <Typography sx={{ fontWeight: "bold" }}>Legendă</Typography>
-              }
-              secondary={`
-                ${new Date(
-                  layersData.lastUpdatedAt
-                ).toLocaleDateString("ro-RO", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
-              `}
-            />
-          </ListItem>
-          <Divider />
-          {Object.entries(SeverityLevelColor).map(([k, v]) => {
-            return (
-              <ListItem disablePadding>
-                <ListItemAvatar
-                  sx={{
-                    minWidth: theme.spacing(3),
-                  }}
-                >
-                  <Avatar
-                    sx={{
-                      background: v,
-                      height: "1rem",
-                      width: "1rem",
-                    }}
-                  >
-                    {" "}
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={SeverityLevelDescription[k as SeverityLevel]}
-                />
-              </ListItem>
-            );
-          })}
-        </List>
-        {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <CalendarPicker
-            date={date}
-            onChange={(newDate) => setDate(newDate)}
-          />
-        </LocalizationProvider> */}
-      </Paper>
+      {selectedLayer !== CovidMapLayers.HOSPITALS && (
+        <FeatureMapLegend lastUpdatedAt={layersData.lastUpdatedAt} />
+      )}
+      {selectedLayer === CovidMapLayers.HOSPITALS && (
+        <HospitalsMapLegend
+          lastUpdatedAt={layersData.lastUpdatedAt}
+          limits={mappedLimits}
+          onFiltered={filterHospitals}
+          filtered={filteredHospitals as SeverityLevel[]}
+        />
+      )}
 
       <Box
         sx={{
@@ -362,6 +421,15 @@ export default function CovidMap({
               <FontAwesomeIcon icon={faThLarge} />
             </ToggleButton>
           </Tooltip>
+          <Tooltip title="Vezi spitale (în funcție de paturi ATI ocupate)">
+            <ToggleButton
+              value={CovidMapLayers.HOSPITALS}
+              aria-label="centered"
+              selected={selectedLayer === CovidMapLayers.HOSPITALS}
+            >
+              <FontAwesomeIcon icon={faHospitalSymbol} />
+            </ToggleButton>
+          </Tooltip>
         </ToggleButtonGroup>
       </Box>
       <DeckGL
@@ -371,72 +439,27 @@ export default function CovidMap({
       >
         <StaticMap
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
-          mapStyle="mapbox://styles/claudiuc/ck4rj1g758emo1do5slyr0i09"
+          mapStyle={
+            selectedLayer === CovidMapLayers.HOSPITALS
+              ? "mapbox://styles/claudiuc/ckv1j1ucy032w15qq3fmcuyyo"
+              : "mapbox://styles/claudiuc/ck4rj1g758emo1do5slyr0i09"
+          }
         />
-        {hoverInfo?.object && !(siruta || county) && (
-          <Card
-            style={{
-              position: "absolute",
-              zIndex: 1,
-              pointerEvents: "none",
-              left: hoverInfo.x,
-              top: hoverInfo.y,
-              width: 250,
-            }}
-          >
-            <CardHeader
-              avatar={
-                <Avatar>
-                  <FontAwesomeIcon icon={faMapPin} />
-                </Avatar>
-              }
-              title={hoverInfo.object.properties.name}
-              subheader={
-                "county" in hoverInfo.object.properties
-                  ? hoverInfo.object.properties.county
-                  : ""
-              }
+        {hoverInfo?.object &&
+          !(siruta || county) &&
+          ("coordinates" in hoverInfo.object ? (
+            <HospitalMapHovercard
+              x={hoverInfo.x}
+              y={hoverInfo.y}
+              object={hoverInfo.object}
             />
-            <CardContent>
-              <List disablePadding dense>
-                <ListItem alignItems="flex-start" disablePadding>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <FontAwesomeIcon icon={faHeadSideCough} />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary="Rata de infectare (incidența)"
-                    secondary={`${hoverInfo.object.properties.rate.toFixed(
-                      2
-                    )}‰`}
-                  />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem alignItems="flex-start" disablePadding>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <FontAwesomeIcon icon={faSyringe} />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary="Rata de vaccinare" secondary="35%" />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem alignItems="flex-start" disablePadding>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <FontAwesomeIcon icon={faBed} />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary="Paturi ATI disponibile"
-                    secondary={1}
-                  />
-                </ListItem>
-              </List>
-            </CardContent>
-          </Card>
-        )}
+          ) : (
+            <FeatureMapHovercard
+              x={hoverInfo.x}
+              y={hoverInfo.y}
+              object={hoverInfo.object}
+            />
+          ))}
       </DeckGL>
     </>
   );

@@ -40,15 +40,15 @@ type Props = {
   style?: React.CSSProperties;
 };
 
-export default function LocalitySummaryBookmarkCTA({
-  ...rest
-}: Props) {
+export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
   const [locality, setRandomLocality] = useState<Locality>();
   const [loadingLocality, setLoadingLocality] = useState(false);
   const [currentLocationActive, setCurrentLocationActive] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
 
-  const [trackedLocalities, setTrackedLocalities] = useRecoilState(trackedLocalitiesState);
+  const [trackedLocalities, setTrackedLocalities] = useRecoilState(
+    trackedLocalitiesState
+  );
   const theme = useTheme();
 
   const getCurrentLocation = useCallback(() => {
@@ -95,11 +95,11 @@ export default function LocalitySummaryBookmarkCTA({
   }
 
   const number = getNewestLocalityData(locality) || 0;
-  let fill = SeverityLevelColor[getSeverityLevel(locality)];
+  let fill = SeverityLevelColor.geojson[getSeverityLevel(locality)];
 
   const data = Object.entries(locality.data);
   const regression = linearRegression(
-    data.map(([key, value]) => [new Date(key).valueOf(), value])
+    data.map(([key, value]) => [new Date(key).valueOf(), Number(value)])
   );
 
   let trend = <TrendingUpIcon />;
@@ -113,9 +113,9 @@ export default function LocalitySummaryBookmarkCTA({
     if (!locality || trackedLocalities.includes(locality.siruta)) {
       return;
     }
-    
+
     setTrackedLocalities([...trackedLocalities, locality.siruta]);
-  }
+  };
 
   return (
     <>
@@ -124,7 +124,7 @@ export default function LocalitySummaryBookmarkCTA({
           avatar={
             <Avatar
               sx={{
-                bgcolor: SeverityLevelColor[getSeverityLevel(locality)],
+                bgcolor: SeverityLevelColor.geojson[getSeverityLevel(locality)],
                 fontSize: ".6rem",
               }}
               aria-label="recipe"

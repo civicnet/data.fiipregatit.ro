@@ -6,12 +6,12 @@ export const getNewestLocalityData = (
   let latest: [string?, number?] = [undefined, undefined];
   for (const [key, value] of Object.entries(locality.data)) {
     if (!latest[0]) {
-      latest = [key, value];
+      latest = [key, Number(value)];
       continue;
     }
 
     if (new Date(latest[0]).valueOf() < new Date(key).valueOf()) {
-      latest = [key, value];
+      latest = [key, Number(value)];
     }
   }
 

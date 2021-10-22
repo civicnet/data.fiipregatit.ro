@@ -71,7 +71,7 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
 
   const data = Object.entries(locality.data);
   const regression = linearRegression(
-    data.map(([key, value]) => [new Date(key).valueOf(), value])
+    data.map(([key, value]) => [new Date(key).valueOf(), Number(value)])
   );
 
   let trend = <TrendingDown />;
@@ -105,7 +105,7 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
         avatar={
           <Avatar
             sx={{
-              bgcolor: SeverityLevelColor[getSeverityLevel(locality)],
+              bgcolor: SeverityLevelColor.geojson[getSeverityLevel(locality)],
               fontSize: ".6rem",
             }}
             aria-label="recipe"
@@ -177,7 +177,9 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
           </>
         }
         title={<a href={`/localities/${locality.siruta}`}>{locality.uat}</a>}
-        subheader={<a href={`/localities/${locality.siruta}`}>{locality.county}</a>}
+        subheader={
+          <a href={`/localities/${locality.siruta}`}>{locality.county}</a>
+        }
       />
       <CardMedia sx={{ height: 100, position: "relative" }}>
         <Box
