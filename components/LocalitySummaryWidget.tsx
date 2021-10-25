@@ -100,7 +100,7 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
   };
 
   return (
-    <Card sx={{ maxWidth: 345 }} variant="outlined" {...rest}>
+    <Card variant="outlined" {...rest}>
       <CardHeader
         avatar={
           <Avatar

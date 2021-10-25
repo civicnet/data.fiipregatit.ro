@@ -35,6 +35,7 @@ import {
 import { useCallback, useState, useEffect } from "react";
 import { trackedLocalitiesState } from "../store/trackedLocalitiesState";
 import { useRecoilState } from "recoil";
+import SkeletonCard from "./SkeletonCard";
 
 type Props = {
   style?: React.CSSProperties;
@@ -91,7 +92,7 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
   }, []);
 
   if (!locality) {
-    return <Skeleton width="345px" height="340px" />;
+    return <SkeletonCard width="100%" />;
   }
 
   const number = getNewestLocalityData(locality) || 0;

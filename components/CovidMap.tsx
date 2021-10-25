@@ -28,6 +28,7 @@ import {
   ToggleButtonGroup,
   Tooltip,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -91,14 +92,20 @@ export default function CovidMap({
   const [layersData, setLayersData] = useState<Layers>();
   const [hospitals, setHospitalData] = useState<Hospital[]>();
   const [icuRange, setICURange] = useState<[number, number]>();
-  const [trackedViewState, setTrackedViewState] = useState({viewState: INITIAL_VIEW_STATE});
   const [filteredHospitals, setFilteredHospitals] = useState(
     Object.keys(SeverityLevel)
   );
   const [hoverInfo, setHoverInfo] = useState<HoverInfo<HoverInfoObject>>();
-  const mapRef = useRef<Element>(null);
 
   const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+
+  if (matches) {
+    INITIAL_VIEW_STATE.zoom = 5;
+    INITIAL_VIEW_STATE.latitude = 47;
+  }
+
+  const mapRef = useRef<Element>(null);
 
   const fetchLayers = useCallback(async () => {
     let url = `/api/layers`;
@@ -219,16 +226,9 @@ export default function CovidMap({
       return;
     }
 
-    if (!mapRef.current) {
-      return;
-    }
-
     const currentObject = hoverInfo?.object;
-    const height = mapRef.current && mapRef.current.clientHeight;
-    const width = mapRef.current && mapRef.current.clientWidth;
-
     const { object } = info;
-    let xy = [];
+
     if ("coordinates" in object) {
       if (currentObject && "coordinates" in currentObject) {
         if (
@@ -238,12 +238,6 @@ export default function CovidMap({
           return;
         }
       }
-
-      xy = new WebMercatorViewport({
-        ...trackedViewState.viewState,
-        width,
-        height,
-      }).project([object.coordinates.lng, object.coordinates.lat]);
     } else {
       if (currentObject && "properties" in currentObject) {
         if (
@@ -253,20 +247,9 @@ export default function CovidMap({
           return;
         }
       }
-
-      const coordinates = centroid(object).geometry.coordinates;
-      xy = new WebMercatorViewport({
-        ...trackedViewState.viewState,
-        width,
-        height,
-      }).project(coordinates);
     }
 
-    setHoverInfo({
-      ...info,
-      x: xy[0],
-      y: xy[1],
-    });
+    setHoverInfo(info);
   };
 
   const characters = "aăâbcdefghiîjklmnopqrsștțuvwxyz";
@@ -287,7 +270,7 @@ export default function CovidMap({
       },
       getLineColor: (d: typeof layersData.uats[0]) => {
         let opacity = 64;
-        const obj = hoverInfo?.object;
+        /* const obj = hoverInfo?.object;
         if (
           obj &&
           "properties" in obj &&
@@ -295,7 +278,7 @@ export default function CovidMap({
           obj.properties.siruta === d.properties.siruta
         ) {
           opacity = 255;
-        }
+        } */
 
         return [33, 33, 33, opacity];
       },
@@ -303,9 +286,6 @@ export default function CovidMap({
       visible: selectedLayer === CovidMapLayers.UATS,
       onHover: (info: HoverInfo<Layers["uats"][0]>) =>
         setProjectedHoverInfo(info),
-      updateTriggers: {
-        getLineColor: [hoverInfo, siruta],
-      },
     }),
     new GeoJsonLayer({
       id: "counties-layer",
@@ -443,7 +423,7 @@ export default function CovidMap({
   ];
 
   return (
-    <Box ref={mapRef} sx={{ width: "100%", height: "100%"}}>
+    <Box ref={mapRef} sx={{ width: "100%", height: "100%" }}>
       {selectedLayer !== CovidMapLayers.HOSPITALS && (
         <FeatureMapLegend lastUpdatedAt={layersData.lastUpdatedAt} />
       )}
@@ -506,7 +486,6 @@ export default function CovidMap({
         initialViewState={viewState}
         controller={true}
         layers={layersToRender}
-        onViewStateChange={setTrackedViewState}
       >
         <StaticMap
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
@@ -515,22 +494,17 @@ export default function CovidMap({
               ? "mapbox://styles/claudiuc/ckv1j1ucy032w15qq3fmcuyyo"
               : "mapbox://styles/claudiuc/ck4rj1g758emo1do5slyr0i09"
           }
+        />{" "}
+        {/* <HospitalMapHovercard
+          x={hoverInfo?.x || 0}
+          y={hoverInfo?.y || 0}
+          object={hoverInfo?.object}
         />
-        {hoverInfo?.object &&
-          !(siruta || county) &&
-          ("coordinates" in hoverInfo.object ? (
-            <HospitalMapHovercard
-              x={hoverInfo.x}
-              y={hoverInfo.y}
-              object={hoverInfo.object}
-            />
-          ) : (
-            <FeatureMapHovercard
-              x={hoverInfo.x}
-              y={hoverInfo.y}
-              object={hoverInfo.object}
-            />
-          ))}
+        <FeatureMapHovercard
+          x={hoverInfo?.x || 0}
+          y={hoverInfo?.y || 0}
+          object={hoverInfo?.object}
+        /> */}
       </DeckGL>
     </Box>
   );

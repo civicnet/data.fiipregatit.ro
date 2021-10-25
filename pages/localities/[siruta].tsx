@@ -1,10 +1,4 @@
-import {
-  Box,
-  Grid,
-  Skeleton,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Grid, Skeleton, useMediaQuery, useTheme } from "@mui/material";
 import type { NextPage } from "next";
 import React, { useCallback, useEffect, useState } from "react";
 import { Head } from "../../components/Head";
@@ -42,7 +36,7 @@ const LocalityPage: NextPage = () => {
     }
 
     const response = await fetch(`/api/bySiruta?code=${siruta}`);
-    const json = await response.json() as LocalityWithFeature;
+    const json = (await response.json()) as LocalityWithFeature;
     setLocality(json);
 
     const centroidCoords = turfCentroid(json.features.uat);
@@ -58,37 +52,41 @@ const LocalityPage: NextPage = () => {
       <Head />
       <Header />
       <main style={{ marginBottom: theme.spacing(8) }}>
-        <Grid container justifyContent="center">
-          <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
-            {(locality &&centroid) && (
-              <>
-                <Headline>
-                  {labelForLocality(locality)}
-                </Headline>
-                <Grid container spacing={2} sx={{ margin: "0 auto" }}>
-                  <Grid item xs={12} md={6}>
-                    <LocalitySummaryWidget locality={locality} />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Box sx={{ width: "100%", height: "100%", position: "relative" }}>
-                      <DynamicCovidMap
-                        layer={CovidMapLayers.UATS}
-                        county={locality.county}
-                        siruta={locality.siruta}
-                        viewState={{
-                          latitude: centroid.geometry.coordinates[1] || 0, 
-                          longitude: centroid.geometry.coordinates[0] || 0, 
-                          zoom: 8.5,
-                          pitch: 0,
-                          bearing: 0,
-                        }}
-                      />
-                    </Box>
-                  </Grid>
-                </Grid>
-              </>
-            )}
-            <TrackedLocalitiesCTA />
+        {locality && centroid && (
+          <Headline>{labelForLocality(locality)}</Headline>
+        )}
+        <Grid container spacing={2} justifyContent="center">
+          {locality && centroid && (
+            <>
+              <Grid item xs={11} md={5}>
+                <LocalitySummaryWidget locality={locality} />
+              </Grid>
+              <Grid item xs={11} md={6}>
+                <Box
+                  sx={{
+                    width: "100%",
+                    height: matches ? "300px" : "100%",
+                    position: "relative",
+                  }}
+                >
+                  <DynamicCovidMap
+                    layer={CovidMapLayers.UATS}
+                    county={locality.county}
+                    siruta={locality.siruta}
+                    viewState={{
+                      latitude: centroid.geometry.coordinates[1] || 0,
+                      longitude: centroid.geometry.coordinates[0] || 0,
+                      zoom: 8.5,
+                      pitch: 0,
+                      bearing: 0,
+                    }}
+                  />
+                </Box>
+              </Grid>
+            </>
+          )}
+          <Grid item xs={11}>
+          <TrackedLocalitiesCTA />
           </Grid>
         </Grid>
       </main>

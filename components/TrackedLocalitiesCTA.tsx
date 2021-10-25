@@ -13,10 +13,11 @@ export default function TrackedLocalitiesCTA() {
   const [trackedLocalityCodes, setTrackedLocalityCodes] = useRecoilState(
     trackedLocalitiesState
   );
-
   const [trackedLocalities, setTrackedLocalities] = useState<
     LocalityWithFeature[]
   >([]);
+
+  const theme = useTheme();
 
   const fetchLocalities = useCallback(async () => {
     const fetchSingle = async (code: string) => {
@@ -29,89 +30,91 @@ export default function TrackedLocalitiesCTA() {
       trackedLocalityCodes.map((code) => fetchSingle(code))
     );
     setTrackedLocalities(localities);
-  }, [trackedLocalityCodes]);
+  }, []);
 
   useEffect(() => {
     fetchLocalities();
   }, [trackedLocalityCodes]);
 
-  const theme = useTheme();
-
-  return !trackedLocalityCodes.length ? (
-    <Grid
-      container
-      justifyContent="space-between"
-      spacing={2}
-      sx={{
-        mt: 8,
-      }}
-    >
-      <Grid item xs={12} sm={6} sx={{ mb: { xs: theme.spacing(3) }, pr: 3 }}>
-        <Typography
-          variant="h1"
-          sx={{
-            fontSize: "1.7rem",
-            fontWeight: 500,
-            pb: 6,
-            maxWidth: theme.spacing(60),
-            "&:after": {
-              content: `" "`,
-              display: "block",
-              width: "50%",
-              borderBottom: `5px solid ${theme.palette.primary.main}`,
-              mt: 2,
-            },
-          }}
-        >
-          Marchează localitățile de interes personal pentru access ușor mai
-          târziu
-        </Typography>
-        <Typography>
-          Oriunde vezi pictograma
-          <Box
+  if (!trackedLocalityCodes.length) {
+    return (
+      <Grid
+        container
+        justifyContent="space-between"
+        spacing={2}
+        sx={{
+          mt: 8,
+        }}
+      >
+        <Grid item xs={12} sm={6} sx={{ mb: { xs: theme.spacing(3) }, pr: 3 }}>
+          <Typography
+            variant="h1"
             sx={{
-              height: "1rem",
-              bottom: 0,
-              position: "relative",
-              width: "1.5rem",
-              display: "inline-block",
+              fontSize: "1.7rem",
+              fontWeight: 500,
+              pb: 6,
+              maxWidth: theme.spacing(60),
+              "&:after": {
+                content: `" "`,
+                display: "block",
+                width: "50%",
+                borderBottom: `5px solid ${theme.palette.primary.main}`,
+                mt: 2,
+              },
             }}
           >
-            <BookmarkAddOutlined
+            Marchează localitățile de interes personal pentru access ușor mai
+            târziu
+          </Typography>
+          <Typography>
+            Oriunde vezi pictograma
+            <Box
               sx={{
-                position: "absolute",
-                width: "1.2rem",
-                height: "1.2rem",
-                left: "50%",
-                top: "50%",
-                translate: "-50% -50%",
+                height: "1rem",
+                bottom: 0,
+                position: "relative",
+                width: "1.5rem",
+                display: "inline-block",
               }}
-            />
-          </Box>
-          atașată unei localități, o poți folosi pentru a marca o locație.
-        </Typography>
-        <Typography sx={{ mt: "2rem" }}>
-          Informațiile sunt salvate doar pe dispozitivul tău, fără a fi necesară
-          crearea unui cont. Va trebui să recreezi lista de localități marcate
-          pe fiecare dispozitiv nou folosit.
-        </Typography>
+            >
+              <BookmarkAddOutlined
+                sx={{
+                  position: "absolute",
+                  width: "1.2rem",
+                  height: "1.2rem",
+                  left: "50%",
+                  top: "50%",
+                  translate: "-50% -50%",
+                }}
+              />
+            </Box>
+            atașată unei localități, o poți folosi pentru a marca o locație.
+          </Typography>
+          <Typography sx={{ mt: "2rem" }}>
+            Informațiile sunt salvate doar pe dispozitivul tău, fără a fi
+            necesară crearea unui cont. Va trebui să recreezi lista de
+            localități marcate pe fiecare dispozitiv nou folosit.
+          </Typography>
+        </Grid>
+        <Grid
+          item
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            justifyContent: { sm: "end", xs: "center" },
+          }}
+          xs={12}
+          sm={6}
+        >
+          <LocalitySummaryBookmarkCTA />
+        </Grid>
       </Grid>
-      <Grid
-        item
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          justifyContent: { sm: "end", xs: "center" },
-        }}
-        xs={12}
-        sm={6}
-      >
-        <LocalitySummaryBookmarkCTA />
-      </Grid>
-    </Grid>
-  ) : (
-    <>
+    );
+  }
+
+  if (trackedLocalities.length) {
+    return (
       <Grid
         container
         spacing={2}
@@ -119,32 +122,40 @@ export default function TrackedLocalitiesCTA() {
           mt: 8,
         }}
       >
-        {trackedLocalities.length ? (
-          trackedLocalities.map((l) => {
-            return (
-              <Grid
-                item
-                xs={12}
-                md={6}
-                lg={4}
-                key={`tracked-locality-${l.siruta}`}
-              >
-                <LocalitySummaryWidget locality={l} />
-              </Grid>
-            );
-          })
-        ) : (
-          <Grid
-            item
-            xs={12}
-            md={6}
-            lg={4}
-            key={`tracked-locality-skeleton-1`}
-          >
-            <SkeletonCard />
-          </Grid>
-        )}
+        {trackedLocalities.map((l) => {
+          return (
+            <Grid
+              item
+              xs={12}
+              md={6}
+              lg={4}
+              key={`tracked-locality-${l.siruta}`}
+            >
+              <LocalitySummaryWidget locality={l} />
+            </Grid>
+          );
+        })}
       </Grid>
-    </>
+    );
+  }
+
+  return (
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        mt: 8,
+      }}
+    >
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={4}
+        key={`tracked-locality-skeleton`}
+      >
+        <SkeletonCard style={{ width: 345 }} />
+      </Grid>
+    </Grid>
   );
 }
