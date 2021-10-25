@@ -17,15 +17,16 @@ import {
   ListItemText,
   Divider,
 } from "@mui/material";
-import React from "react";
+import React, { useMemo } from "react";
 import { getNewestData } from "../lib/getNewestData";
+import { getNewestNonStaleData } from "../lib/getNewestNonStaleData";
 import { Hospital } from "../pages/api/hospitals";
 import { HoverInfo, HoverInfoCounty, HoverInfoUAT } from "./CovidMap";
 
 export default function FeatureMapHovercard(hoverInfo: HoverInfo<Hospital>) {
-  const inpatient = getNewestData(hoverInfo.object.data.inpatient);
-  const icu = getNewestData(hoverInfo.object.data.icu);
-
+  const inpatient = useMemo(() => getNewestNonStaleData(hoverInfo.object.data.inpatient), [hoverInfo]);
+  const icu = useMemo(() => getNewestNonStaleData(hoverInfo.object.data.icu), [hoverInfo]);
+  
   return (
     <Card
       style={{
@@ -56,7 +57,7 @@ export default function FeatureMapHovercard(hoverInfo: HoverInfo<Hospital>) {
             </ListItemAvatar>
             <ListItemText
               primary="Număr de persoane spitalizate"
-              secondary={typeof inpatient === "string" ? 0 : Number(inpatient)}
+              secondary={inpatient && inpatient[1] || 0}
             />
           </ListItem>
           <Divider variant="inset" component="li" />
@@ -68,7 +69,7 @@ export default function FeatureMapHovercard(hoverInfo: HoverInfo<Hospital>) {
             </ListItemAvatar>
             <ListItemText
               primary="Număr de persoane internate la ATI"
-              secondary={typeof icu === "string" ? 0 : Number(icu)}
+              secondary={icu && icu[1] || 0}
             />
           </ListItem>
         </List>

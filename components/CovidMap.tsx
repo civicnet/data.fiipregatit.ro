@@ -1,9 +1,15 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import DeckGL from "@deck.gl/react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { TextLayer } from "@deck.gl/layers";
 import { ScatterplotLayer } from "@deck.gl/layers";
-import { StaticMap } from "react-map-gl";
+import { StaticMap, WebMercatorViewport } from "react-map-gl";
 import chroma from "chroma-js";
 import { Layers } from "../pages/api/layers";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
@@ -39,6 +45,7 @@ import FeatureMapHovercard from "./FeatureMapHovercard";
 import HospitalMapHovercard from "./HospitalMapHovercard";
 import FeatureMapLegend from "./FeatureMapLegend";
 import HospitalsMapLegend from "./HospitalsMapLegend";
+import { getNewestNonStaleData } from "../lib/getNewestNonStaleData";
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -84,10 +91,12 @@ export default function CovidMap({
   const [layersData, setLayersData] = useState<Layers>();
   const [hospitals, setHospitalData] = useState<Hospital[]>();
   const [icuRange, setICURange] = useState<[number, number]>();
+  const [trackedViewState, setTrackedViewState] = useState({viewState: INITIAL_VIEW_STATE});
   const [filteredHospitals, setFilteredHospitals] = useState(
     Object.keys(SeverityLevel)
   );
   const [hoverInfo, setHoverInfo] = useState<HoverInfo<HoverInfoObject>>();
+  const mapRef = useRef<Element>(null);
 
   const theme = useTheme();
 
@@ -131,13 +140,6 @@ export default function CovidMap({
     setSelectedLayer(layer);
   };
 
-  const getCountForHospital = (d: Hospital): number => {
-    let countICU = getNewestData(d.data.icu);
-    let countInpatients = getNewestData(d.data.inpatient);
-
-    return Number(countICU) + Number(countInpatients);
-  };
-
   const filterHospitals = (severity: SeverityLevel) => {
     if (filteredHospitals.includes(severity)) {
       setFilteredHospitals(filteredHospitals.filter((s) => s !== severity));
@@ -169,6 +171,16 @@ export default function CovidMap({
     { [SeverityLevel.NONE]: [0, 0] } as Record<SeverityLevel, [number, number]>
   );
 
+  const getCountForHospital = (d: Hospital): number => {
+    const latestICUCount = getNewestNonStaleData(d.data.icu) || [, 0];
+    const latestInpatientsCount = getNewestNonStaleData(d.data.inpatient) || [
+      ,
+      0,
+    ];
+
+    return latestICUCount[1] + latestInpatientsCount[1];
+  };
+
   const severityForHospital = (d: Hospital): SeverityLevel => {
     let sev = SeverityLevel.NONE;
 
@@ -176,14 +188,9 @@ export default function CovidMap({
       sev = SeverityLevel.NONE;
     }
 
-    let icuCount = getNewestData(d.data.icu);
-    if (typeof icuCount !== "number") {
-      icuCount = 0;
-    }
-    const count = Number(icuCount);
-
+    const count = getNewestNonStaleData(d.data.icu) || [, 0];
     for (const [k, [low, high]] of Object.entries(mappedLimits)) {
-      if (count >= low && count <= high) {
+      if (count[1] >= low && count[1] <= high) {
         sev = k as SeverityLevel;
         break;
       }
@@ -193,12 +200,73 @@ export default function CovidMap({
   };
 
   const getScatterplotColor = (opacity: number) => (d: Hospital) => {
+    const last = getNewestData(d.data.icu);
+    if (typeof last !== "number") {
+      return [128, 128, 128, opacity];
+    }
+
     const sev = severityForHospital(d);
     if (filteredHospitals.includes(sev)) {
       return [...chroma(SeverityLevelColor.scatterplot[sev]).rgb(), opacity];
     }
 
     return [0, 0, 0, 0];
+  };
+
+  const setProjectedHoverInfo = (info?: HoverInfo<HoverInfoObject>): void => {
+    if (!info?.object) {
+      setHoverInfo(info);
+      return;
+    }
+
+    if (!mapRef.current) {
+      return;
+    }
+
+    const currentObject = hoverInfo?.object;
+    const height = mapRef.current && mapRef.current.clientHeight;
+    const width = mapRef.current && mapRef.current.clientWidth;
+
+    const { object } = info;
+    let xy = [];
+    if ("coordinates" in object) {
+      if (currentObject && "coordinates" in currentObject) {
+        if (
+          JSON.stringify(currentObject.coordinates) ===
+          JSON.stringify(object.coordinates)
+        ) {
+          return;
+        }
+      }
+
+      xy = new WebMercatorViewport({
+        ...trackedViewState.viewState,
+        width,
+        height,
+      }).project([object.coordinates.lng, object.coordinates.lat]);
+    } else {
+      if (currentObject && "properties" in currentObject) {
+        if (
+          JSON.stringify(object.properties) ===
+          JSON.stringify(currentObject.properties)
+        ) {
+          return;
+        }
+      }
+
+      const coordinates = centroid(object).geometry.coordinates;
+      xy = new WebMercatorViewport({
+        ...trackedViewState.viewState,
+        width,
+        height,
+      }).project(coordinates);
+    }
+
+    setHoverInfo({
+      ...info,
+      x: xy[0],
+      y: xy[1],
+    });
   };
 
   const characters = "aăâbcdefghiîjklmnopqrsștțuvwxyz";
@@ -233,7 +301,8 @@ export default function CovidMap({
       },
       getLineWidth: 1,
       visible: selectedLayer === CovidMapLayers.UATS,
-      onHover: (info: HoverInfo<Layers["uats"][0]>) => setHoverInfo(info),
+      onHover: (info: HoverInfo<Layers["uats"][0]>) =>
+        setProjectedHoverInfo(info),
       updateTriggers: {
         getLineColor: [hoverInfo, siruta],
       },
@@ -255,7 +324,8 @@ export default function CovidMap({
       visible: selectedLayer === CovidMapLayers.COUNTIES,
       getLineColor: () => [0, 0, 0, 128],
       getLineWidth: 1,
-      onHover: (info: HoverInfo<Layers["counties"][0]>) => setHoverInfo(info),
+      onHover: (info: HoverInfo<Layers["counties"][0]>) =>
+        setProjectedHoverInfo(info),
     }),
     new TextLayer({
       id: "county-label-layer",
@@ -368,12 +438,12 @@ export default function CovidMap({
       getLineColor: getScatterplotColor(255),
       lineWidthMinPixels: 2,
       visible: selectedLayer === CovidMapLayers.HOSPITALS,
-      onHover: (info: HoverInfo<Hospital>) => setHoverInfo(info),
+      onHover: (info: HoverInfo<Hospital>) => setProjectedHoverInfo(info),
     }),
   ];
 
   return (
-    <>
+    <Box ref={mapRef} sx={{ width: "100%", height: "100%"}}>
       {selectedLayer !== CovidMapLayers.HOSPITALS && (
         <FeatureMapLegend lastUpdatedAt={layersData.lastUpdatedAt} />
       )}
@@ -436,6 +506,7 @@ export default function CovidMap({
         initialViewState={viewState}
         controller={true}
         layers={layersToRender}
+        onViewStateChange={setTrackedViewState}
       >
         <StaticMap
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
@@ -461,6 +532,6 @@ export default function CovidMap({
             />
           ))}
       </DeckGL>
-    </>
+    </Box>
   );
 }
