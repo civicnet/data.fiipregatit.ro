@@ -134,7 +134,11 @@ const LocalityPage: NextPage = ({
 export default LocalityPage;
 
 type ServerSideContent = {
-  data: Record<string, unknown>;
+  data: {
+    title: string,
+    low: number,
+    high: number,
+  };
   content: string;
 };
 
