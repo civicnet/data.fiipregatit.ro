@@ -1,9 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Data from "../../data/octombrie.json";
 import { COUNTIES_URL, UATS_URL } from "../../lib/constants";
-import { LocalityWithFeature } from "../../types/Locality";
+import { LocalityWithFeatureAndHospitals } from "../../types/Locality";
 import { getNewestLocalityData } from "../../lib/getNewestLocalityData";
 import { Feature } from "@turf/turf";
+import icu from "../../data/icu.json";
+import inpatients from "../../data/inpatients.json";
+import { Hospital } from "./hospitals";
 
 type ErrorResponse = { error: boolean };
 
@@ -17,7 +20,7 @@ let countyFeatures: Feature[] = [];
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<LocalityWithFeature[] | ErrorResponse>
+  res: NextApiResponse<LocalityWithFeatureAndHospitals[] | ErrorResponse>
 ) {
   let { low, high } = req.query;
 
@@ -63,16 +66,31 @@ export default async function handler(
       (f: Feature) => f.properties?.name === locality.county
     );
 
+    const icuHospitals = icu.filter(
+      (h: Hospital) => h.locality?.properties.natcode === locality.siruta
+    );
+    const inpatientHospitals = inpatients.filter(
+      (h: Hospital) => h.locality?.properties.natcode === locality.siruta
+    );
+
     if (!uat) {
-       throw new Error(`No UAT match for ${locality.siruta}`);
+      throw new Error(`No UAT match for ${locality.siruta}`);
     }
 
     if (!county) {
-       throw new Error(`No UAT match for ${locality.county}`);
+      throw new Error(`No UAT match for ${locality.county}`);
     }
-    
+
     response.push({
       ...locality,
+      icu: icuHospitals.map((h: Hospital) => ({
+        name: h.hospital,
+        data: h.data,
+      })),
+      inpatient: inpatientHospitals.map((h: Hospital) => ({
+        name: h.hospital,
+        data: h.data,
+      })),
       features: {
         uat,
         county,

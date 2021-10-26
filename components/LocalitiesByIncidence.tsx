@@ -5,7 +5,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/system";
 import React, { CSSProperties, useCallback, useEffect, useState } from "react";
-import { LocalityWithFeature } from "../types/Locality";
+import { LocalityWithFeatureAndHospitals } from "../types/Locality";
 import LocalitySummaryWidget from "./LocalitySummaryWidget";
 import SkeletonCard from "./SkeletonCard";
 
@@ -16,7 +16,7 @@ type Props = {
 };
 
 export default function LocalitiesByIncidence({ low, high, ...rest }: Props) {
-  const [localities, setLocalities] = useState<LocalityWithFeature[]>([]);
+  const [localities, setLocalities] = useState<LocalityWithFeatureAndHospitals[]>([]);
 
   const theme = useTheme();
   const downMid = useMediaQuery(theme.breakpoints.down("md"));

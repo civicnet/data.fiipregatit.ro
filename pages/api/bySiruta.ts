@@ -4,13 +4,13 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import Data from "../../data/octombrie.json";
 import { UATS_URL, COUNTIES_URL } from "../../lib/constants";
 import { fetchLocalityBySiruta } from "../../server/fetchLocalityBySiruta";
-import { LocalityWithFeature } from "../../types/Locality";
+import { LocalityWithFeatureAndHospitals } from "../../types/Locality";
 
 type ErrorResponse = { error: boolean };
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<LocalityWithFeature | ErrorResponse>
+  res: NextApiResponse<LocalityWithFeatureAndHospitals | ErrorResponse>
 ) {
   const { query } = req;
 

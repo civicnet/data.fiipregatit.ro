@@ -1,11 +1,14 @@
 import { Feature } from "@turf/turf";
 import october from "../data/octombrie.json";
+import icu from "../data/icu.json";
+import inpatients from "../data/inpatients.json";
 import { UATS_URL, COUNTIES_URL } from "../lib/constants";
-import { LocalityWithFeature } from "../types/Locality";
+import { LocalityWithFeatureAndHospitals } from "../types/Locality";
+import { Hospital } from "../pages/api/hospitals";
 
 export async function fetchLocalityBySiruta(
   code: string
-): Promise<LocalityWithFeature> {
+): Promise<LocalityWithFeatureAndHospitals> {
   const [uatResponse, countyResponse] = await Promise.all([
     fetch(UATS_URL),
     fetch(COUNTIES_URL),
@@ -24,6 +27,12 @@ export async function fetchLocalityBySiruta(
       const county = countyFeatures.find(
         (f: Feature) => f.properties?.name === locality.county
       );
+      const icuHospitals = icu.filter(
+        (h: Hospital) => h.locality?.properties.natcode === locality.siruta
+      );
+      const inpatientHospitals = inpatients.filter(
+        (h: Hospital) => h.locality?.properties.natcode === locality.siruta
+      );
 
       if (!uat) {
         throw new Error(`No uat feature match for ${locality.siruta}`);
@@ -35,6 +44,14 @@ export async function fetchLocalityBySiruta(
 
       return {
         ...locality,
+        icu: icuHospitals.map((h: Hospital) => ({
+          name: h.hospital,
+          data: h.data,
+        })),
+        inpatient: inpatientHospitals.map((h: Hospital) => ({
+          name: h.hospital,
+          data: h.data,
+        })),
         features: {
           uat,
           county,

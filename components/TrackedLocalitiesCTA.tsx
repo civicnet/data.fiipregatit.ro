@@ -4,7 +4,7 @@ import { Box } from "@mui/system";
 import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { trackedLocalitiesState } from "../store/trackedLocalitiesState";
-import { LocalityWithFeature } from "../types/Locality";
+import { LocalityWithFeatureAndHospitals } from "../types/Locality";
 import LocalitySummaryBookmarkCTA from "./LocalitySummaryBookmarkCTA";
 import LocalitySummaryWidget from "./LocalitySummaryWidget";
 import SkeletonCard from "./SkeletonCard";
@@ -14,7 +14,7 @@ export default function TrackedLocalitiesCTA() {
     trackedLocalitiesState
   );
   const [trackedLocalities, setTrackedLocalities] = useState<
-    LocalityWithFeature[]
+    LocalityWithFeatureAndHospitals[]
   >([]);
 
   const theme = useTheme();
@@ -22,7 +22,7 @@ export default function TrackedLocalitiesCTA() {
   const fetchLocalities = useCallback(async () => {
     const fetchSingle = async (code: string) => {
       const response = await fetch(`/api/bySiruta?code=${code}`);
-      const json: LocalityWithFeature = await response.json();
+      const json: LocalityWithFeatureAndHospitals = await response.json();
       return json;
     };
 
@@ -30,7 +30,7 @@ export default function TrackedLocalitiesCTA() {
       trackedLocalityCodes.map((code) => fetchSingle(code))
     );
     setTrackedLocalities(localities);
-  }, []);
+  }, [trackedLocalityCodes]);
 
   useEffect(() => {
     fetchLocalities();
@@ -147,13 +147,7 @@ export default function TrackedLocalitiesCTA() {
         mt: 8,
       }}
     >
-      <Grid
-        item
-        xs={12}
-        md={6}
-        lg={4}
-        key={`tracked-locality-skeleton`}
-      >
+      <Grid item xs={12} md={6} lg={4} key={`tracked-locality-skeleton`}>
         <SkeletonCard style={{ width: 345 }} />
       </Grid>
     </Grid>

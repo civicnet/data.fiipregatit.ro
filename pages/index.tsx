@@ -20,6 +20,8 @@ import Header from "../components/Header";
 import TrackedLocalitiesCTA from "../components/TrackedLocalitiesCTA";
 import Headline from "../components/Headline";
 import Footer from "../components/Footer";
+import LocalitiesByTrend from "../components/LocalitiesByTrend";
+import { Trend } from "./api/byTrend";
 
 const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
   ssr: false,
@@ -67,12 +69,25 @@ const Home: NextPage = () => {
                 </Box>
               </Grid>
               <Grid item xs={12} sx={{ textAlign: "center" }}>
-                <Button startIcon={<ArrowRight />} href="/harta" variant="outlined" sx={{ mt: 4 }}>
+                <Button
+                  startIcon={<ArrowRight />}
+                  href="/harta"
+                  variant="outlined"
+                  sx={{ mt: 4 }}
+                >
                   Vezi harta
                 </Button>
               </Grid>
             </Grid>
             {/* <TrackedLocalitiesSlider /> */}
+            <Grid container sx={{ margin: `${theme.spacing(8)} auto` }}>
+              <Grid item xs={12}>
+                <Typography variant="h1" sx={headlineSx}>
+                  Localități în scădere
+                </Typography>
+                <LocalitiesByTrend trend={Trend.DOWN} />
+              </Grid>
+            </Grid>
             <Grid container sx={{ margin: `${theme.spacing(8)} auto` }}>
               <Grid item xs={12}>
                 <Typography variant="h1" sx={headlineSx}>

@@ -120,7 +120,7 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
 
   return (
     <>
-      <Card sx={{ width: 345 }} variant="outlined" {...rest}>
+      <Card sx={{ maxWidth: 350 }} variant="outlined" {...rest}>
         <CardHeader
           avatar={
             <Avatar
@@ -169,31 +169,32 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
         </CardMedia>
         <Divider variant="middle" />
         <CardContent>
-          <List dense={true}>
-            <ListItem>
-              <ListItemText primary="Spitalizați" secondary={42} />
-              <ListItemText primary="Paturi libere ATI" secondary={1} />
-            </ListItem>
-          </List>
+          <Typography variant="subtitle2">
+            Lorem ipsum dolor sit amet consectur
+          </Typography>
         </CardContent>
         <CardActions disableSpacing>
           <Tooltip title="Altă localitate">
-            <IconButton
-              onClick={fetchRandom}
-              disabled={!!locality && loadingLocality}
-              size="large"
-            >
-              <Refresh />
-            </IconButton>
+            <span>
+              <IconButton
+                onClick={fetchRandom}
+                disabled={!!locality && loadingLocality}
+                size="large"
+              >
+                <Refresh />
+              </IconButton>
+            </span>
           </Tooltip>
           <Tooltip title="Caută localitatea mea">
-            <IconButton
-              onClick={getCurrentLocation}
-              disabled={currentLocationActive || locationLoading}
-              size="large"
-            >
-              <MyLocationOutlined />
-            </IconButton>
+            <span>
+              <IconButton
+                onClick={getCurrentLocation}
+                disabled={currentLocationActive || locationLoading}
+                size="large"
+              >
+                <MyLocationOutlined />
+              </IconButton>
+            </span>
           </Tooltip>
           <Tooltip title={`Marchează ${locality.uat}, jud. ${locality.county}`}>
             <IconButton

@@ -6,6 +6,9 @@ import { getNewestLocalityData } from "../../lib/getNewestLocalityData";
 import { Feature } from "@turf/turf";
 import { linearRegression } from "simple-statistics";
 import { ByIncidenceOrder } from "./byIncidence";
+import icu from "../../data/icu.json";
+import inpatients from "../../data/inpatients.json";
+import { Hospital } from "./hospitals";
 
 type ErrorResponse = { error: boolean };
 
@@ -75,6 +78,13 @@ export default async function handler(
       (f: Feature) => f.properties?.name === locality.county
     );
 
+    const icuHospitals = icu.filter(
+      (h: Hospital) => h.locality?.properties.natcode === locality.siruta
+    );
+    const inpatientHospitals = inpatients.filter(
+      (h: Hospital) => h.locality?.properties.natcode === locality.siruta
+    );
+
     if (!uat) {
       throw new Error(`No UAT match for ${locality.siruta}`);
     }
@@ -89,6 +99,14 @@ export default async function handler(
         uat,
         county,
       },
+      icu: icuHospitals.map((h: Hospital) => ({
+        name: h.hospital,
+        data: h.data,
+      })),
+      inpatient: inpatientHospitals.map((h: Hospital) => ({
+        name: h.hospital,
+        data: h.data,
+      })),
     });
   }
 

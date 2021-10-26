@@ -20,7 +20,7 @@ import {
   useTheme,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { LocalityWithFeature } from "../types/Locality";
+import { LocalityWithFeatureAndHospitals } from "../types/Locality";
 import { getNewestLocalityData } from "../lib/getNewestLocalityData";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
 import { getSeverityLevel } from "../lib/getSeverityLevel";
@@ -40,10 +40,12 @@ import {
 import { useRecoilState } from "recoil";
 import { trackedLocalitiesState } from "../store/trackedLocalitiesState";
 import { useRouter } from "next/router";
+import { getNewestNonStaleData } from "../lib/getNewestNonStaleData";
+import { Hospital } from "../pages/api/hospitals";
 
 type Props = {
   style?: React.CSSProperties;
-  locality: LocalityWithFeature;
+  locality: LocalityWithFeatureAndHospitals;
 };
 
 export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
@@ -97,6 +99,28 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
     setTrackedLocalities(
       trackedLocalities.filter((l) => l !== locality.siruta)
     );
+  };
+
+  const hospitalTooltipReducer =
+    (list: Hospital[]) => (acc: string, h: Hospital, idx: number) => {
+      if (idx == 2) {
+        const remaining = list.length - 3;
+        return `${acc} și alte ${remaining} spitale.`;
+      }
+
+      if (idx > 2) {
+        return acc;
+      }
+
+      return `${acc}${!!acc.length ? `,` : ""} ${h.name}`;
+    };
+
+  const hospitalPeopleCounter = (acc: number, h: Hospital) => {
+    const newest = getNewestNonStaleData(h.data);
+    if (!newest) {
+      return acc;
+    }
+    return acc + newest[1];
   };
 
   return (
@@ -191,28 +215,52 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
         >
           <SimpleLineChart series={locality.data} />
         </Box>
-
-        <Typography
-          gutterBottom
-          variant="subtitle2"
-          component="div"
-          sx={{
-            fontFamily: "Roboto, sans-serif",
-            position: "absolute",
-            bottom: theme.spacing(2),
-            left: theme.spacing(2),
-            mb: 0,
-          }}
-        >
-          Rată de incidență {number.toFixed(2)}‰
-        </Typography>
       </CardMedia>
       <Divider variant="middle" />
       <CardContent>
+        <Box sx={{ textAlign: "center", mt: theme.spacing(2), mb: theme.spacing(2) }}>
+          <Typography
+            variant="h4"
+            sx={{
+              fontFamily: "Roboto, sans-serif",
+            }}
+          >
+            {number.toFixed(2)}‰
+          </Typography>
+          <Typography variant="overline">Rată de incidență</Typography>
+        </Box>
         <List dense={true}>
           <ListItem>
-            <ListItemText primary="Spitalizați" secondary={42} />
-            <ListItemText primary="Paturi libere ATI" secondary={1} />
+            {!!locality.inpatient.length && (
+              <Tooltip
+                title={locality.inpatient.reduce(
+                  hospitalTooltipReducer(locality.inpatient),
+                  ""
+                )}
+              >
+                <ListItemText
+                  primary="Spitalizați"
+                  secondary={locality.inpatient.reduce(
+                    hospitalPeopleCounter,
+                    0
+                  )}
+                />
+              </Tooltip>
+            )}
+
+            {!!locality.icu.length && (
+              <Tooltip
+                title={locality.icu.reduce(
+                  hospitalTooltipReducer(locality.icu),
+                  ""
+                )}
+              >
+                <ListItemText
+                  primary="Internați la ATI"
+                  secondary={locality.icu.reduce(hospitalPeopleCounter, 0)}
+                />
+              </Tooltip>
+            )}
           </ListItem>
         </List>
       </CardContent>
