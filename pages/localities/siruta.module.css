@@ -1,0 +1,18 @@
+.accordionSummaryRoot {
+  background-color: #f7f7f7;
+  color: #333;
+  transition: all 250ms ease-in;
+}
+
+.accordionSummaryContent {
+    background-color: transparent;
+}
+
+.accordionSummaryExpanded {
+  background-color: #fff;
+  color: #933;
+}
+
+.accordionSummaryExpanded .accordionSummaryContent {
+    background-color: transparent;
+}
