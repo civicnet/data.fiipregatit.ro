@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "localities/[siruta].tsx": {
+      "includeFiles": "content/**"
+    }
+  }
+}
