@@ -59,7 +59,7 @@ const LocalityPage: NextPage = ({
     <div>
       <Head />
       <Header />
-      <main style={{ marginBottom: theme.spacing(8) }}>
+      <main>
         <Grid container justifyContent="center">
           <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
             {locality && coords && (
@@ -95,34 +95,38 @@ const LocalityPage: NextPage = ({
                   </Grid>
                 </>
               )}
-              <Grid item xs={11}>
-                <Headline>Restricții</Headline>
-                {(content as ServerSideContent[]).map((c, idx) => {
-                  return (
-                    <Accordion key={`accordion-${idx}`}>
-                      <AccordionSummary
-                        expandIcon={<ExpandMore />}
-                        aria-controls={`panel1a-content-${idx}`}
-                        classes={{
-                          expanded: classes.accordionSummaryExpanded,
-                          root: classes.accordionSummaryRoot,
-                          content: classes.accordionSummaryContent,
-                        }}
-                      >
-                        <Typography variant="h6">{c.data.title}</Typography>
-                      </AccordionSummary>
-                      <AccordionDetails>
-                        <MarkdownContent>{c.content}</MarkdownContent>
-                      </AccordionDetails>
-                    </Accordion>
-                  );
-                })}
-              </Grid>
-              <Grid item xs={11}>
-                <Headline>Localități marcate</Headline>
-                <TrackedLocalitiesCTA />
-              </Grid>
             </Grid>
+          </Grid>
+        </Grid>
+        <Grid container justifyContent="center" sx={{ background: "#efefef", mt: theme.spacing(6), pb: theme.spacing(6)}}>
+          <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
+            <Headline>Restricții</Headline>
+            {(content as ServerSideContent[]).map((c, idx) => {
+              return (
+                <Accordion key={`accordion-${idx}`}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMore />}
+                    aria-controls={`panel1a-content-${idx}`}
+                    classes={{
+                      expanded: classes.accordionSummaryExpanded,
+                      root: classes.accordionSummaryRoot,
+                      content: classes.accordionSummaryContent,
+                    }}
+                  >
+                    <Typography variant="h6">{c.data.title}</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <MarkdownContent>{c.content}</MarkdownContent>
+                  </AccordionDetails>
+                </Accordion>
+              );
+            })}
+          </Grid>
+        </Grid>
+        <Grid container justifyContent="center" sx={{ pb: theme.spacing(6)}}>
+          <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
+            <Headline>Localități marcate</Headline>
+            <TrackedLocalitiesCTA />
           </Grid>
         </Grid>
       </main>
@@ -135,9 +139,9 @@ export default LocalityPage;
 
 type ServerSideContent = {
   data: {
-    title: string,
-    low: number,
-    high: number,
+    title: string;
+    low: number;
+    high: number;
   };
   content: string;
 };

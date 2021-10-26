@@ -55,10 +55,14 @@ const Home: NextPage = () => {
     <div className={styles.container}>
       <Head />
       <Header />
-      <main className={styles.main} style={{ marginBottom: theme.spacing(8) }}>
+      <main className={styles.main}>
         <Grid container justifyContent="center">
           <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
             <TrackedLocalitiesCTA />
+          </Grid>
+        </Grid>
+        <Grid container justifyContent="center" sx={{ background: "#efefef", mt: theme.spacing(6)}}>
+          <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
             <Grid container sx={{ margin: `${theme.spacing(8)} auto` }}>
               <Grid item xs={12}>
                 <Headline>Hartă</Headline>
@@ -79,7 +83,10 @@ const Home: NextPage = () => {
                 </Button>
               </Grid>
             </Grid>
-            {/* <TrackedLocalitiesSlider /> */}
+          </Grid>
+        </Grid>
+        <Grid container justifyContent="center">
+          <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
             <Grid container sx={{ margin: `${theme.spacing(8)} auto` }}>
               <Grid item xs={12}>
                 <Typography variant="h1" sx={headlineSx}>
@@ -88,6 +95,10 @@ const Home: NextPage = () => {
                 <LocalitiesByTrend trend={Trend.DOWN} />
               </Grid>
             </Grid>
+          </Grid>
+        </Grid>
+        <Grid container justifyContent="center" sx={{ background: "#efefef", mt: theme.spacing(6)}}>
+          <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
             <Grid container sx={{ margin: `${theme.spacing(8)} auto` }}>
               <Grid item xs={12}>
                 <Typography variant="h1" sx={headlineSx}>
