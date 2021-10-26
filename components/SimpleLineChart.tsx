@@ -10,9 +10,10 @@ import { max } from "../lib/max";
 
 type Props = {
   series: Record<string, number>;
+  color: string;
 };
 
-export default function SimpleLineChart({ series }: Props) {
+export default function SimpleLineChart({ series, color }: Props) {
   const getX = (d: DateValue) => d.date.valueOf();
   const getY = (d: DateValue) => d.value;
 
@@ -45,7 +46,7 @@ export default function SimpleLineChart({ series }: Props) {
               data={data}
               x={(d) => xScale.range([16, parent.width - 16])(getX(d)) ?? 0}
               y={(d) => yScale.range([parent.height - 16, 16])(getY(d)) ?? 0}
-              stroke="#f99"
+              stroke={color}
               strokeWidth={3}
               shapeRendering="geometricPrecision"
             />

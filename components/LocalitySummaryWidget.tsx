@@ -27,10 +27,17 @@ import { getSeverityLevel } from "../lib/getSeverityLevel";
 import SimpleLineChart from "./SimpleLineChart";
 import { linearRegression } from "simple-statistics";
 import {
+  ArrowDownward,
+  ArrowRight,
+  ArrowUpward,
   BookmarkAddOutlined,
   BookmarkRemoveOutlined,
   Code,
   Launch,
+  PinDrop,
+  PinRounded,
+  PinTwoTone,
+  Room,
   Rule,
   Share,
   TrendingDown,
@@ -76,11 +83,23 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
     data.map(([key, value]) => [new Date(key).valueOf(), Number(value)])
   );
 
-  let trend = <TrendingDown />;
+  let trend = (
+    <Tooltip title="Tendință descrescătoare">
+      <ArrowDownward />
+    </Tooltip>
+  );
   if (regression.b === 0) {
-    trend = <TrendingFlat />;
+    trend = (
+      <Tooltip title="Stagnează">
+        <ArrowRight />
+      </Tooltip>
+    );
   } else if (regression.b < 0) {
-    trend = <TrendingUp />;
+    trend = (
+      <Tooltip title="Tendință crescătoare">
+        <ArrowUpward />
+      </Tooltip>
+    );
   }
 
   const trackLocality = () => {
@@ -134,7 +153,7 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
             }}
             aria-label="recipe"
           >
-            {trend}
+            <Room />
           </Avatar>
         }
         action={
@@ -213,7 +232,10 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
             height: "100%",
           }}
         >
-          <SimpleLineChart series={locality.data} />
+          <SimpleLineChart
+            series={locality.data}
+            color={SeverityLevelColor.geojson[getSeverityLevel(locality)]}
+          />
         </Box>
       </CardMedia>
       <Divider variant="middle" />
@@ -225,14 +247,24 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
             mb: theme.spacing(2),
           }}
         >
-          <Typography
-            variant="h4"
+          <Box
             sx={{
-              fontFamily: "Roboto, sans-serif",
+              display: "flex",
+              gap: theme.spacing(2),
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            {number.toFixed(2)}‰
-          </Typography>
+            {trend}
+            <Typography
+              variant="h4"
+              sx={{
+                fontFamily: "Roboto, sans-serif",
+              }}
+            >
+              {number.toFixed(2)}‰
+            </Typography>
+          </Box>
           <Typography variant="overline">Rată de incidență</Typography>
         </Box>
         <List dense={true}>
@@ -266,6 +298,12 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
                   secondary={locality.icu.reduce(hospitalPeopleCounter, 0)}
                 />
               </Tooltip>
+            )}
+
+            {!locality.icu.length && !locality.inpatient.length && (
+                <ListItemText
+                  secondary={`Nu există spitale cu bolnavi COVID în ${locality.uat}`}
+                />
             )}
           </ListItem>
         </List>

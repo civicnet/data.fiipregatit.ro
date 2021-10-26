@@ -26,9 +26,13 @@ import { getSeverityLevel } from "../lib/getSeverityLevel";
 import SimpleLineChart from "./SimpleLineChart";
 import { linearRegression } from "simple-statistics";
 import {
+  ArrowDownward,
+  ArrowRight,
+  ArrowUpward,
   BookmarkAddOutlined,
   MyLocationOutlined,
   Refresh,
+  Room,
   TrendingDown,
   TrendingFlat,
 } from "@mui/icons-material";
@@ -103,11 +107,23 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
     data.map(([key, value]) => [new Date(key).valueOf(), Number(value)])
   );
 
-  let trend = <TrendingUpIcon />;
+  let trend = (
+    <Tooltip title="Tendință descrescătoare">
+      <ArrowDownward />
+    </Tooltip>
+  );
   if (regression.b === 0) {
-    trend = <TrendingFlat />;
+    trend = (
+      <Tooltip title="Stagnează">
+        <ArrowRight />
+      </Tooltip>
+    );
   } else if (regression.b < 0) {
-    trend = <TrendingDown />;
+    trend = (
+      <Tooltip title="Tendință crescătoare">
+        <ArrowUpward />
+      </Tooltip>
+    );
   }
 
   const trackLocality = () => {
@@ -120,7 +136,7 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
 
   return (
     <>
-      <Card sx={{ maxWidth: 350 }} variant="outlined" {...rest}>
+      <Card sx={{ minWidth: { xs: "100%", sm: 300 }, }} variant="outlined" {...rest}>
         <CardHeader
           avatar={
             <Avatar
@@ -130,7 +146,7 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
               }}
               aria-label="recipe"
             >
-              {trend}
+              <Room />
             </Avatar>
           }
           action={
@@ -141,7 +157,12 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
           title={locality.uat}
           subheader={locality.county}
         />
-        <CardMedia sx={{ height: 100, position: "relative" }}>
+        <CardMedia
+          sx={{
+            height: 100,
+            position: "relative",
+          }}
+        >
           <Box
             sx={{
               position: "absolute",
@@ -149,29 +170,41 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
               height: "100%",
             }}
           >
-            <SimpleLineChart series={locality.data} />
+            <SimpleLineChart
+              series={locality.data}
+              color={SeverityLevelColor.geojson[getSeverityLevel(locality)]}
+            />
           </Box>
-
-          <Typography
-            gutterBottom
-            variant="subtitle2"
-            component="div"
-            sx={{
-              fontFamily: "Roboto, sans-serif",
-              position: "absolute",
-              bottom: theme.spacing(2),
-              left: theme.spacing(2),
-              mb: 0,
-            }}
-          >
-            Rată de incidență {number.toFixed(2)}‰
-          </Typography>
         </CardMedia>
         <Divider variant="middle" />
         <CardContent>
-          <Typography variant="subtitle2">
-            Lorem ipsum dolor sit amet consectur
-          </Typography>
+          <Box
+            sx={{
+              textAlign: "center",
+              mt: theme.spacing(2),
+              mb: theme.spacing(2),
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                gap: theme.spacing(2),
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {trend}
+              <Typography
+                variant="h4"
+                sx={{
+                  fontFamily: "Roboto, sans-serif",
+                }}
+              >
+                {number.toFixed(2)}‰
+              </Typography>
+            </Box>
+            <Typography variant="overline">Rată de incidență</Typography>
+          </Box>
         </CardContent>
         <CardActions disableSpacing>
           <Tooltip title="Altă localitate">
