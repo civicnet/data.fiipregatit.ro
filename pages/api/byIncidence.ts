@@ -67,10 +67,10 @@ export default async function handler(
     );
 
     const icuHospitals = icu.filter(
-      (h: Hospital) => h.locality?.properties.natcode === locality.siruta
+      (h) => h.locality?.properties.natcode === locality.siruta
     );
     const inpatientHospitals = inpatients.filter(
-      (h: Hospital) => h.locality?.properties.natcode === locality.siruta
+      (h) => h.locality?.properties.natcode === locality.siruta
     );
 
     if (!uat) {
@@ -83,11 +83,11 @@ export default async function handler(
 
     response.push({
       ...locality,
-      icu: icuHospitals.map((h: Hospital) => ({
+      icu: icuHospitals.map((h) => ({
         name: h.hospital,
         data: h.data,
       })),
-      inpatient: inpatientHospitals.map((h: Hospital) => ({
+      inpatient: inpatientHospitals.map((h) => ({
         name: h.hospital,
         data: h.data,
       })),

@@ -102,7 +102,7 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
   };
 
   const hospitalTooltipReducer =
-    (list: Hospital[]) => (acc: string, h: Hospital, idx: number) => {
+    (list: unknown[]) => (acc: string, h: any, idx: number) => {
       if (idx == 2) {
         const remaining = list.length - 3;
         return `${acc} și alte ${remaining} spitale.`;
@@ -115,7 +115,7 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
       return `${acc}${!!acc.length ? `,` : ""} ${h.name}`;
     };
 
-  const hospitalPeopleCounter = (acc: number, h: Hospital) => {
+  const hospitalPeopleCounter = (acc: number, h: any) => {
     const newest = getNewestNonStaleData(h.data);
     if (!newest) {
       return acc;
@@ -218,7 +218,13 @@ export default function LocalitySummaryWidget({ locality, ...rest }: Props) {
       </CardMedia>
       <Divider variant="middle" />
       <CardContent>
-        <Box sx={{ textAlign: "center", mt: theme.spacing(2), mb: theme.spacing(2) }}>
+        <Box
+          sx={{
+            textAlign: "center",
+            mt: theme.spacing(2),
+            mb: theme.spacing(2),
+          }}
+        >
           <Typography
             variant="h4"
             sx={{

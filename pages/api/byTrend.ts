@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Data from "../../data/octombrie.json";
 import { COUNTIES_URL, UATS_URL } from "../../lib/constants";
-import { LocalityWithFeature } from "../../types/Locality";
+import { LocalityWithFeatureAndHospitals } from "../../types/Locality";
 import { getNewestLocalityData } from "../../lib/getNewestLocalityData";
 import { Feature } from "@turf/turf";
 import { linearRegression } from "simple-statistics";
@@ -18,7 +18,10 @@ export enum Trend {
   FLAT = "FLAT",
 }
 
-export type ByTrendResponse = { uats: LocalityWithFeature[]; total: number };
+export type ByTrendResponse = {
+  uats: LocalityWithFeatureAndHospitals[];
+  total: number;
+};
 let uatFeatures: Feature[] = [];
 let countyFeatures: Feature[] = [];
 
@@ -79,10 +82,10 @@ export default async function handler(
     );
 
     const icuHospitals = icu.filter(
-      (h: Hospital) => h.locality?.properties.natcode === locality.siruta
+      (h) => h.locality?.properties.natcode === locality.siruta
     );
     const inpatientHospitals = inpatients.filter(
-      (h: Hospital) => h.locality?.properties.natcode === locality.siruta
+      (h) => h.locality?.properties.natcode === locality.siruta
     );
 
     if (!uat) {
@@ -99,11 +102,11 @@ export default async function handler(
         uat,
         county,
       },
-      icu: icuHospitals.map((h: Hospital) => ({
+      icu: icuHospitals.map((h) => ({
         name: h.hospital,
         data: h.data,
       })),
-      inpatient: inpatientHospitals.map((h: Hospital) => ({
+      inpatient: inpatientHospitals.map((h) => ({
         name: h.hospital,
         data: h.data,
       })),

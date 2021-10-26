@@ -14,9 +14,9 @@ export type LocalityWithFeatureAndHospitals = LocalityWithFeature & {
   icu: {
     name: string,
     data: Record<string, number | string>,
-  },
+  }[],
   inpatient: {
     name: string,
     data: Record<string, number | string>,
-  },
+  }[],
 };
