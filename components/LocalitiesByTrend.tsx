@@ -6,7 +6,7 @@ import {
 import { useTheme } from "@mui/system";
 import React, { CSSProperties, useCallback, useEffect, useState } from "react";
 import { ByTrendResponse, Trend } from "../pages/api/byTrend";
-import { LocalityWithFeature } from "../types/Locality";
+import { LocalityWithFeature, LocalityWithFeatureAndHospitals } from "../types/Locality";
 import LocalitySummaryWidget from "./LocalitySummaryWidget";
 import SkeletonCard from "./SkeletonCard";
 
@@ -16,7 +16,7 @@ type Props = {
 };
 
 export default function LocalitiesByTrend({ trend, ...rest }: Props) {
-  const [localities, setLocalities] = useState<LocalityWithFeature[]>([]);
+  const [localities, setLocalities] = useState<LocalityWithFeatureAndHospitals[]>([]);
 
   const theme = useTheme();
   const downMid = useMediaQuery(theme.breakpoints.down("md"));
