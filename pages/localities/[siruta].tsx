@@ -170,9 +170,6 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const rate = getNewestNonStaleData(match.data);
 
-  const tst =  await fsp.readdir(process.cwd());
-  console.log(tst);
-  
   const contentPath = path.join(process.cwd(), "content", "restrictions");
 
   const files = await fsp.readdir(contentPath);
