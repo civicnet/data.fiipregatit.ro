@@ -40,6 +40,8 @@ import { useCallback, useState, useEffect } from "react";
 import { trackedLocalitiesState } from "../store/trackedLocalitiesState";
 import { useRecoilState } from "recoil";
 import SkeletonCard from "./SkeletonCard";
+import { Trend } from "../pages/api/byTrend";
+import TrendArrow from "./TrendArrow";
 
 type Props = {
   style?: React.CSSProperties;
@@ -107,23 +109,11 @@ export default function LocalitySummaryBookmarkCTA({ ...rest }: Props) {
     data.map(([key, value]) => [new Date(key).valueOf(), Number(value)])
   );
 
-  let trend = (
-    <Tooltip title="Tendință descrescătoare">
-      <ArrowDownward />
-    </Tooltip>
-  );
+  let trend = <TrendArrow trend={Trend.DOWN} />;
   if (regression.b === 0) {
-    trend = (
-      <Tooltip title="Stagnează">
-        <ArrowRight />
-      </Tooltip>
-    );
+    trend = <TrendArrow trend={Trend.FLAT} />;
   } else if (regression.b < 0) {
-    trend = (
-      <Tooltip title="Tendință crescătoare">
-        <ArrowUpward />
-      </Tooltip>
-    );
+    trend = <TrendArrow trend={Trend.UP} />;
   }
 
   const trackLocality = () => {
