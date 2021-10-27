@@ -36,8 +36,8 @@ export default function Footer(props: any) {
               item
               xs={12}
               md={6}
-              lg={3}
-              sx={{ textAlign: { xs: "center" } }}
+              lg={2}
+              sx={{ textAlign: { xs: "center", sm: "left" } }}
             >
               <ul>
                 <li>
@@ -61,8 +61,8 @@ export default function Footer(props: any) {
               item
               xs={12}
               md={6}
-              lg={3}
-              sx={{ textAlign: { xs: "center" } }}
+              lg={4}
+              sx={{ textAlign: { xs: "center", sm: "left" } }}
             >
               <ul>
                 <li>
@@ -117,8 +117,8 @@ export default function Footer(props: any) {
               item
               xs={12}
               md={6}
-              lg={3}
-              sx={{ textAlign: { xs: "center" } }}
+              lg={4}
+              sx={{ textAlign: { xs: "center", sm: "left" } }}
             >
               <ul>
                 <li>
@@ -161,8 +161,8 @@ export default function Footer(props: any) {
               item
               xs={12}
               md={6}
-              lg={3}
-              sx={{ textAlign: { xs: "center" } }}
+              lg={2}
+              sx={{ textAlign: { xs: "center", sm: "left" } }}
             >
               <ul>
                 <li>
