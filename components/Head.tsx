@@ -16,7 +16,7 @@ export function Head({
       <meta name="description" content={description} />
       <meta name="viewport" content="initial-scale=1, width=device-width" />
       
-      <link rel="icon" href="/qr.png" />
+      <link rel="icon" href="/favicon.png" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link
