@@ -39,6 +39,11 @@ export default function SearchInput() {
 
   useEffect(() => {
     (async () => {
+      if (value === "") {
+        setSuggestions([]);
+        setSuggestionCount(0);
+        return;
+      }
       const results = await fetch(`/api/search?q=${value}&limit=${LIMIT}`);
       const json = await results.json();
 
