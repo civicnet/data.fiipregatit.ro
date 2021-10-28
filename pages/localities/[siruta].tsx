@@ -65,17 +65,55 @@ const LocalityPage: NextPage = ({
             {locality && coords && (
               <Headline>{labelForLocality(locality)}</Headline>
             )}
+            <Grid container justifyContent="space-between" spacing={2}>
+              <Grid item xs={12} md={4}>
+                <LocalitySummaryWidget locality={locality} />
+              </Grid>
+
+              <Grid item xs={12} md={8}>
+                {(content as ServerSideContent[]).map((c, idx) => {
+                  return (
+                    <Accordion key={`accordion-${idx}`}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore />}
+                        aria-controls={`panel1a-content-${idx}`}
+                        classes={{
+                          expanded: classes.accordionSummaryExpanded,
+                          root: classes.accordionSummaryRoot,
+                          content: classes.accordionSummaryContent,
+                        }}
+                      >
+                        <Typography variant="h6">{c.data.title}</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <MarkdownContent>{c.content}</MarkdownContent>
+                      </AccordionDetails>
+                    </Accordion>
+                  );
+                })}
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          justifyContent="center"
+          sx={{
+            background: "#efefef",
+            mt: theme.spacing(6),
+            pb: theme.spacing(6),
+          }}
+        >
+          <Grid item xs={12} sm={10} md={9} lg={8} xl={6}>
+            <Headline>Hartă</Headline>
             <Grid container spacing={2} justifyContent="center">
               {locality && coords && (
                 <>
-                  <Grid item xs={11} md={5}>
-                    <LocalitySummaryWidget locality={locality} />
-                  </Grid>
-                  <Grid item xs={11} md={6}>
+                  <Grid item xs={12} md={12}>
                     <Box
                       sx={{
                         width: "100%",
-                        height: matches ? "300px" : "100%",
+                        height: "400px",
                         position: "relative",
                       }}
                     >
@@ -98,32 +136,7 @@ const LocalityPage: NextPage = ({
             </Grid>
           </Grid>
         </Grid>
-        <Grid container justifyContent="center" sx={{ background: "#efefef", mt: theme.spacing(6), pb: theme.spacing(6)}}>
-          <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
-            <Headline>Restricții</Headline>
-            {(content as ServerSideContent[]).map((c, idx) => {
-              return (
-                <Accordion key={`accordion-${idx}`}>
-                  <AccordionSummary
-                    expandIcon={<ExpandMore />}
-                    aria-controls={`panel1a-content-${idx}`}
-                    classes={{
-                      expanded: classes.accordionSummaryExpanded,
-                      root: classes.accordionSummaryRoot,
-                      content: classes.accordionSummaryContent,
-                    }}
-                  >
-                    <Typography variant="h6">{c.data.title}</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <MarkdownContent>{c.content}</MarkdownContent>
-                  </AccordionDetails>
-                </Accordion>
-              );
-            })}
-          </Grid>
-        </Grid>
-        <Grid container justifyContent="center" sx={{ pb: theme.spacing(6)}}>
+        <Grid container justifyContent="center" sx={{ pb: theme.spacing(6) }}>
           <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
             <Headline>Localități marcate</Headline>
             <TrackedLocalitiesCTA />

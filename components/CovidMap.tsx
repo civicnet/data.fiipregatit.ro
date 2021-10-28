@@ -71,8 +71,6 @@ export type HoverInfoObject = HoverInfoCounty | HoverInfoUAT | Hospital;
 
 export type HoverInfo<T extends HoverInfoObject = HoverInfoObject> = {
   object: T;
-  x: number;
-  y: number;
 };
 
 type Props = {
@@ -108,16 +106,16 @@ export default function CovidMap({
   const mapRef = useRef<Element>(null);
 
   const fetchLayers = useCallback(async () => {
-    let url = `/api/layers`;
+    let urlParams = "";
     if (county) {
-      url = `${url}?county=${county}`;
+      urlParams = `?county=${county}`;
     } else if (siruta && !county) {
-      url = `${url}?siruta=${siruta}`;
+      urlParams = `?siruta=${siruta}`;
     }
 
     const [fetchedLayersData, hospitalData] = await Promise.all([
-      fetch(url),
-      fetch(`/api/hospitals`),
+      fetch(`/api/layers${urlParams}`),
+      fetch(`/api/hospitals${urlParams}`),
     ]);
 
     const [layersDataResponse, hospitalDataResponse] = await Promise.all([
@@ -221,34 +219,6 @@ export default function CovidMap({
   };
 
   const setProjectedHoverInfo = (info?: HoverInfo<HoverInfoObject>): void => {
-    if (!info?.object) {
-      setHoverInfo(info);
-      return;
-    }
-
-    const currentObject = hoverInfo?.object;
-    const { object } = info;
-
-    if ("coordinates" in object) {
-      if (currentObject && "coordinates" in currentObject) {
-        if (
-          JSON.stringify(currentObject.coordinates) ===
-          JSON.stringify(object.coordinates)
-        ) {
-          return;
-        }
-      }
-    } else {
-      if (currentObject && "properties" in currentObject) {
-        if (
-          JSON.stringify(object.properties) ===
-          JSON.stringify(currentObject.properties)
-        ) {
-          return;
-        }
-      }
-    }
-
     setHoverInfo(info);
   };
 
@@ -407,9 +377,9 @@ export default function CovidMap({
       opacity: 1,
       stroked: true,
       filled: true,
-      radiusScale: 60,
-      radiusMinPixels: 6,
-      radiusMaxPixels: 80,
+      radiusScale: 30,
+      radiusMinPixels: 4,
+      radiusMaxPixels: 60,
       getPosition: (d: Hospital) => {
         return [d.coordinates.lng, d.coordinates.lat];
       },
@@ -424,17 +394,35 @@ export default function CovidMap({
 
   return (
     <Box ref={mapRef} sx={{ width: "100%", height: "100%" }}>
-      {selectedLayer !== CovidMapLayers.HOSPITALS && (
-        <FeatureMapLegend lastUpdatedAt={layersData.lastUpdatedAt} />
-      )}
-      {selectedLayer === CovidMapLayers.HOSPITALS && (
-        <HospitalsMapLegend
-          lastUpdatedAt={layersData.lastUpdatedAt}
-          limits={mappedLimits}
-          onFiltered={filterHospitals}
-          filtered={filteredHospitals as SeverityLevel[]}
-        />
-      )}
+      <Box
+        sx={{
+          position: "absolute",
+          top: theme.spacing(2),
+          left: theme.spacing(2),
+          zIndex: 10,
+        }}
+      >
+        {selectedLayer !== CovidMapLayers.HOSPITALS && (
+          <FeatureMapLegend lastUpdatedAt={layersData.lastUpdatedAt} />
+        )}
+        {selectedLayer === CovidMapLayers.HOSPITALS && (
+          <HospitalsMapLegend
+            lastUpdatedAt={layersData.lastUpdatedAt}
+            limits={mappedLimits}
+            onFiltered={filterHospitals}
+            filtered={filteredHospitals as SeverityLevel[]}
+          />
+        )}
+
+        <Box sx={{ mt: 2 }}>
+          {hoverInfo?.object && "coordinates" in hoverInfo?.object && (
+            <HospitalMapHovercard object={hoverInfo?.object} />
+          )}
+          {hoverInfo?.object && !("coordinates" in hoverInfo?.object) && (
+            <FeatureMapHovercard object={hoverInfo?.object} />
+          )}
+        </Box>
+      </Box>
 
       <Box
         sx={{
@@ -494,17 +482,7 @@ export default function CovidMap({
               ? "mapbox://styles/claudiuc/ckv1j1ucy032w15qq3fmcuyyo"
               : "mapbox://styles/claudiuc/ck4rj1g758emo1do5slyr0i09"
           }
-        />{" "}
-        {/* <HospitalMapHovercard
-          x={hoverInfo?.x || 0}
-          y={hoverInfo?.y || 0}
-          object={hoverInfo?.object}
         />
-        <FeatureMapHovercard
-          x={hoverInfo?.x || 0}
-          y={hoverInfo?.y || 0}
-          object={hoverInfo?.object}
-        /> */}
       </DeckGL>
     </Box>
   );

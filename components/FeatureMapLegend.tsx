@@ -48,16 +48,7 @@ export default function FeatureMapLegend({ lastUpdatedAt }: Props) {
 
   const theme = useTheme();
   return (
-    <Paper
-      sx={{
-        p: 2,
-        mb: 3,
-        position: "absolute",
-        top: theme.spacing(2),
-        left: theme.spacing(2),
-        zIndex: 10,
-      }}
-    >
+    <Paper sx={{ p: 2 }}>
       <List dense={true} disablePadding sx={{ mt: 0, width: 170 }}>
         <ListItem disablePadding>
           <ListItemText

@@ -43,6 +43,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<HospitalsResponse | ErrorResponse>
 ) {
+  const { county, siruta } = req.query;
   const listing: Hospital[] = [];
 
   const numberize = (
@@ -61,6 +62,14 @@ export default async function handler(
   };
 
   for (const hospital of inpatients) {
+    if (siruta && hospital.locality?.properties.natcode !== siruta) {
+      continue;
+    }
+
+    if (county && hospital.locality?.properties.county !== county) {
+      continue;
+    }
+
     const icuData = icu.find(
       (h) => h.hospital === hospital.hospital && h.county === hospital.county
     );
@@ -82,6 +91,14 @@ export default async function handler(
   }
 
   for (const icuHospital of icu) {
+    if (siruta && icuHospital.locality?.properties.natcode !== siruta) {
+      continue;
+    }
+    
+    if (county && icuHospital.locality?.properties.county !== county) {
+      continue;
+    }
+
     const hospitalData = inpatients.find(
       (h) =>
         h.hospital === icuHospital.hospital && h.county === icuHospital.county

@@ -4,15 +4,17 @@ import { Card, CardHeader, Avatar, CardContent, List, ListItem, ListItemAvatar, 
 import React from "react";
 import { HoverInfo, HoverInfoCounty, HoverInfoUAT } from "./CovidMap";
 
-export default function FeatureMapHovercard(hoverInfo: HoverInfo<HoverInfoCounty | HoverInfoUAT>) {
+export default function FeatureMapHovercard(hoverInfo?: HoverInfo<HoverInfoCounty | HoverInfoUAT>) {
+  if (!hoverInfo?.object) {
+    return null;
+  }
+
   return (
     <Card
       style={{
         position: "absolute",
         zIndex: 1,
         pointerEvents: "none",
-        left: hoverInfo.x,
-        top: hoverInfo.y,
         width: 250,
       }}
     >

@@ -23,7 +23,11 @@ import { getNewestNonStaleData } from "../lib/getNewestNonStaleData";
 import { Hospital } from "../pages/api/hospitals";
 import { HoverInfo, HoverInfoCounty, HoverInfoUAT } from "./CovidMap";
 
-export default function FeatureMapHovercard(hoverInfo: HoverInfo<Hospital>) {
+export default function FeatureMapHovercard(hoverInfo?: HoverInfo<Hospital>) {
+  if (!hoverInfo?.object) {
+    return null;
+  }
+  
   const inpatient = useMemo(() => getNewestNonStaleData(hoverInfo.object.data.inpatient), [hoverInfo]);
   const icu = useMemo(() => getNewestNonStaleData(hoverInfo.object.data.icu), [hoverInfo]);
   
@@ -33,8 +37,6 @@ export default function FeatureMapHovercard(hoverInfo: HoverInfo<Hospital>) {
         position: "absolute",
         zIndex: 1,
         pointerEvents: "none",
-        left: hoverInfo.x,
-        top: hoverInfo.y,
         width: 350,
       }}
     >
