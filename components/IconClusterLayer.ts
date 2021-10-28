@@ -23,7 +23,7 @@ export class IconClusterLayer extends CompositeLayer {
   constructor(props: any) {
     super(props);
   }
-  
+
   shouldUpdateState({ changeFlags }: any) {
     return changeFlags.somethingChanged;
   }

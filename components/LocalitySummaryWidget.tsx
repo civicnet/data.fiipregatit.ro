@@ -27,28 +27,18 @@ import { getSeverityLevel } from "../lib/getSeverityLevel";
 import SimpleLineChart from "./SimpleLineChart";
 import { linearRegression } from "simple-statistics";
 import {
-  ArrowDownward,
-  ArrowRight,
-  ArrowUpward,
   BookmarkAddOutlined,
   BookmarkRemoveOutlined,
   Code,
   Launch,
-  PinDrop,
-  PinRounded,
-  PinTwoTone,
   Room,
   Rule,
   Share,
-  TrendingDown,
-  TrendingFlat,
-  TrendingUp,
 } from "@mui/icons-material";
 import { useRecoilState } from "recoil";
 import { trackedLocalitiesState } from "../store/trackedLocalitiesState";
 import { useRouter } from "next/router";
 import { getNewestNonStaleData } from "../lib/getNewestNonStaleData";
-import { Hospital } from "../pages/api/hospitals";
 import TrendArrow from "./TrendArrow";
 import { Trend } from "../pages/api/byTrend";
 

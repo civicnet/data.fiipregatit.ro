@@ -178,8 +178,20 @@ export default function SearchInput() {
                           .map((_, idx) => {
                             return (
                               <ListItem key={`suggestion-placeholder-${idx}`}>
-                                <Box sx={{ display: "flex", width: "100%", height: 48, justifyContent: "space-between" }}>
-                                  <Skeleton sx={{ width: Math.random() < .5 ? "40%" : "30%" }} />
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    width: "100%",
+                                    height: 48,
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <Skeleton
+                                    sx={{
+                                      width:
+                                        Math.random() < 0.5 ? "40%" : "30%",
+                                    }}
+                                  />
                                   <Skeleton sx={{ width: 48 }} />
                                 </Box>
                               </ListItem>

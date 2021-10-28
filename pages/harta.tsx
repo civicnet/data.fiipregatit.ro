@@ -1,8 +1,4 @@
-import {
-  Box,
-  Skeleton,
-  useTheme,
-} from "@mui/material";
+import { Box, Skeleton, useTheme } from "@mui/material";
 import type { NextPage } from "next";
 import React from "react";
 import { Head } from "../components/Head";
@@ -28,7 +24,13 @@ const MapPage: NextPage = () => {
       <Head />
       <Header />
       <main>
-        <Box sx={{ width: "100%", position: "relative", height: `calc(100vh - 375px)` }}>
+        <Box
+          sx={{
+            width: "100%",
+            position: "relative",
+            height: `calc(100vh - 375px)`,
+          }}
+        >
           <DynamicCovidMap layer={CovidMapLayers.HOSPITALS} />
         </Box>
       </main>

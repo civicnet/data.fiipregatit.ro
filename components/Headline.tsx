@@ -3,8 +3,8 @@ import { SxProps, Theme } from "@mui/system";
 import React, { ReactNode } from "react";
 
 type Props = {
-    children?: ReactNode,
-}
+  children?: ReactNode;
+};
 
 export default function Headline(props: Props) {
   const theme = useTheme();

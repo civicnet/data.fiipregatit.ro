@@ -1,8 +1,4 @@
-import {
-  Box,
-  Grid,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Grid, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/system";
 import React, { CSSProperties, useCallback, useEffect, useState } from "react";
 import { LocalityWithFeatureAndHospitals } from "../types/Locality";
@@ -16,7 +12,9 @@ type Props = {
 };
 
 export default function LocalitiesByIncidence({ low, high, ...rest }: Props) {
-  const [localities, setLocalities] = useState<LocalityWithFeatureAndHospitals[]>([]);
+  const [localities, setLocalities] = useState<
+    LocalityWithFeatureAndHospitals[]
+  >([]);
 
   const theme = useTheme();
   const downMid = useMediaQuery(theme.breakpoints.down("md"));

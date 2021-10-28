@@ -8,6 +8,10 @@ import { FacebookOutlined, Instagram, YouTube } from "@mui/icons-material";
 import { Box, Grid, Link, Typography, useTheme } from "@mui/material";
 import React from "react";
 import classes from "./Footer.module.css";
+import Image from "next/image";
+import DSU from "../public/Logo_DSU.svg";
+import IGSU from "../public/Stema_IGSU.png";
+import CivicNet from "../public/CivicNetLogoNegative.svg";
 
 export default function Footer(props: any) {
   const theme = useTheme();
@@ -208,19 +212,20 @@ export default function Footer(props: any) {
         }}
       >
         <Grid item xs={11} sm={10} md={9} xl={6}>
-          <Grid container justifyContent="space-between" className={classes.list}>
+          <Grid
+            container
+            justifyContent="space-between"
+            className={classes.list}
+          >
             <Grid
               item
               sx={{ display: "flex", mt: { xs: theme.spacing(4) } }}
               xs={12}
               lg={3}
             >
-              <img
-                src="/Logo_DSU.svg"
-                height="80"
-                width="80"
-                style={{ marginRight: theme.spacing(2) }}
-              />
+              <Box sx={{ mr: 2 }}>
+                <Image src={DSU} height="80" width="80" />
+              </Box>
               <Typography
                 variant="h4"
                 fontFamily="Roboto, sans-serif"
@@ -242,11 +247,9 @@ export default function Footer(props: any) {
               xs={12}
               lg={4}
             >
-              <img
-                src="/Stema_IGSU.png"
-                height="80"
-                style={{ marginRight: theme.spacing(2), alignSelf: "center" }}
-              />
+              <Box sx={{ mr: 2, alignSelf: "center" }}>
+                <Image src={IGSU} height="150" width="80" />
+              </Box>
               <Typography
                 variant="h4"
                 fontFamily="Roboto, sans-serif"
@@ -265,7 +268,13 @@ export default function Footer(props: any) {
               item
               xs={12}
               lg={2}
-              sx={{ mt: { md: theme.spacing(4), xs: theme.spacing(4), display: "flex" } }}
+              sx={{
+                mt: {
+                  md: theme.spacing(4),
+                  xs: theme.spacing(4),
+                  display: "flex",
+                },
+              }}
             >
               <Box sx={{ alignSelf: "center" }}>
                 <Typography sx={{ color: "#bbb", fontSize: "12px" }}>
@@ -278,10 +287,7 @@ export default function Footer(props: any) {
                   </Typography>{" "}
                   și <FontAwesomeIcon icon={faCoffee} /> de
                 </Typography>
-                <img
-                  src="/CivicNetLogoNegative.svg"
-                  style={{ width: "150px" }}
-                />
+                <Image src={CivicNet} width="150" height="50" />
                 <Typography
                   sx={{
                     color: "#bbb",

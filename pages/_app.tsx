@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { RecoilRoot } from "recoil";
 import { DebugObserver } from "../components/DebugObserver";
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router";
 import { logPageview } from "../lib/ga/logPageview";
 import { WindowWithGA } from "../lib/ga/WindowWithGA";
 
@@ -41,18 +41,23 @@ const theme = createTheme({
   },
 });
 
-export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric) {
+export function reportWebVitals({
+  id,
+  name,
+  label,
+  value,
+}: NextWebVitalsMetric) {
   if (!("gtag" in window)) {
     return;
   }
-  
-  (window as WindowWithGA).gtag('event', name, {
+
+  (window as WindowWithGA).gtag("event", name, {
     event_category:
-      label === 'web-vital' ? 'Web Vitals' : 'Next.js custom metric',
-    value: Math.round(name === 'CLS' ? value * 1000 : value), 
-    event_label: id, 
-    non_interaction: true, 
-  })
+      label === "web-vital" ? "Web Vitals" : "Next.js custom metric",
+    value: Math.round(name === "CLS" ? value * 1000 : value),
+    event_label: id,
+    non_interaction: true,
+  });
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -62,14 +67,14 @@ function MyApp({ Component, pageProps }: AppProps) {
     const handleRouteChange = (url: string) => {
       logPageview(url);
     };
-    
+
     router.events.on("routeChangeComplete", handleRouteChange);
 
     return () => {
       router.events.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
-  
+
   return (
     <RecoilRoot>
       <DebugObserver />

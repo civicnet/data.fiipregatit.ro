@@ -14,20 +14,16 @@ import type {
   InferGetServerSidePropsType,
   NextPage,
 } from "next";
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import { Head } from "../../components/Head";
 import LocalitySummaryWidget from "../../components/LocalitySummaryWidget";
-import { useRouter } from "next/dist/client/router";
-import {
-  LocalityWithFeature,
-  LocalityWithFeatureAndHospitals,
-} from "../../types/Locality";
+import { LocalityWithFeatureAndHospitals } from "../../types/Locality";
 import { labelForLocality } from "../../lib/labelForLocality";
 import Header from "../../components/Header";
 import dynamic from "next/dynamic";
 import { CovidMapLayers } from "../../components/CovidMap";
 import turfCentroid from "@turf/centroid";
-import { Feature, Point, Position, Properties } from "@turf/helpers";
+import { Feature, Point, Properties } from "@turf/helpers";
 import TrackedLocalitiesCTA from "../../components/TrackedLocalitiesCTA";
 import Headline from "../../components/Headline";
 import Footer from "../../components/Footer";
@@ -43,7 +39,6 @@ import classes from "./siruta.module.css";
 const fsp = fs.promises;
 
 const DynamicCovidMap = dynamic(() => import("../../components/CovidMap"), {
-  ssr: false,
   loading: () => <Skeleton height="100%" />,
 });
 
@@ -171,10 +166,17 @@ type ServerSideProps =
       notFound: true;
     };
 
-export const getServerSideProps: GetServerSideProps = async (
-  context
-): Promise<ServerSideProps> => {
-  const siruta = context.params?.siruta;
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+  params,
+}): Promise<ServerSideProps> => {
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=3600, stale-while-revalidate=7200"
+  );
+
+  const siruta = params?.siruta;
 
   if (!siruta || typeof siruta !== "string") {
     return {

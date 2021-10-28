@@ -1,7 +1,6 @@
 import React, {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -9,25 +8,17 @@ import DeckGL from "@deck.gl/react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { TextLayer } from "@deck.gl/layers";
 import { ScatterplotLayer } from "@deck.gl/layers";
-import { StaticMap, WebMercatorViewport } from "react-map-gl";
+import { StaticMap } from "react-map-gl";
 import chroma from "chroma-js";
 import { Layers } from "../pages/api/layers";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
 import { getSeverityLevel } from "../lib/getSeverityLevel";
 import {
-  Avatar,
   Box,
-  Divider,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Paper,
   Skeleton,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -38,7 +29,6 @@ import {
   faThLarge,
 } from "@fortawesome/free-solid-svg-icons";
 import centroid from "@turf/centroid";
-import { SeverityLevelDescription } from "../lib/SeverityLevelDescription";
 import { SeverityLevel } from "../lib/SeverityLevel";
 import { Hospital } from "../pages/api/hospitals";
 import { getNewestData } from "../lib/getNewestData";

@@ -61,6 +61,7 @@
     "@types/common-tags": "^1.8.1",
     "@types/react": "17.0.29",
     "@types/supercluster": "^5.0.3",
+    "babel-plugin-import": "^1.13.3",
     "cross-env": "^7.0.3",
     "eslint": "8.0.0",
     "eslint-config-next": "11.1.2",

@@ -1,19 +1,4 @@
-import {
-  faHeadSideCough,
-  faSyringe,
-  faViruses,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Room,
-  Share,
-  Code,
-  BookmarkAddOutlined,
-  BookmarkRemoveOutlined,
-  Rule,
-  Launch,
-  MoreVert,
-} from "@mui/icons-material";
+import { Room, Share, Code, Rule, Launch, MoreVert } from "@mui/icons-material";
 import {
   Card,
   CardHeader,
@@ -34,7 +19,6 @@ import {
   useTheme,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { id } from "common-tags";
 import React, { ReactNode } from "react";
 import { SeverityLevel } from "../lib/SeverityLevel";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
@@ -81,11 +65,7 @@ export default function NationalSummaryCard({
   return (
     <Card variant="outlined" {...rest}>
       <CardHeader
-        avatar={
-          <Avatar aria-label="recipe">
-            {icon || <Room />}
-          </Avatar>
-        }
+        avatar={<Avatar aria-label="recipe">{icon || <Room />}</Avatar>}
         action={
           <>
             <IconButton aria-label="settings" onClick={handleMenuOpen}>
@@ -154,7 +134,6 @@ export default function NationalSummaryCard({
               justifyContent: "center",
             }}
           >
-            
             <TrendArrow trend={trend} />
             <Typography
               variant="h4"
@@ -169,7 +148,13 @@ export default function NationalSummaryCard({
         <List dense={true}>
           <ListItem>
             {data.map((d, idx) => {
-              return <ListItemText primary={d.subtext} secondary={d.main} key={`list-item-${idx}`}/>;
+              return (
+                <ListItemText
+                  primary={d.subtext}
+                  secondary={d.main}
+                  key={`list-item-${idx}`}
+                />
+              );
             })}
           </ListItem>
         </List>

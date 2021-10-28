@@ -10,15 +10,10 @@ import {
   CardHeader,
   Divider,
   IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Skeleton,
   Tooltip,
   useTheme,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { Locality } from "../types/Locality";
 import { getNewestLocalityData } from "../lib/getNewestLocalityData";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
@@ -26,15 +21,10 @@ import { getSeverityLevel } from "../lib/getSeverityLevel";
 import SimpleLineChart from "./SimpleLineChart";
 import { linearRegression } from "simple-statistics";
 import {
-  ArrowDownward,
-  ArrowRight,
-  ArrowUpward,
   BookmarkAddOutlined,
   MyLocationOutlined,
   Refresh,
   Room,
-  TrendingDown,
-  TrendingFlat,
 } from "@mui/icons-material";
 import { useCallback, useState, useEffect } from "react";
 import { trackedLocalitiesState } from "../store/trackedLocalitiesState";

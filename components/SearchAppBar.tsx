@@ -12,6 +12,8 @@ import styles from "./SearchAppBar.module.css";
 import { Menu } from "@mui/icons-material";
 import clsx from "clsx";
 import Link from "next/link";
+import DSULogo from "../public/Logo_DSU.svg";
+import Image from "next/image";
 
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
@@ -53,7 +55,12 @@ export default function SearchAppBar() {
       >
         <Toolbar>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <img src="/Logo_DSU.svg" height="70" width="70" />
+            <Image
+              src={DSULogo}
+              alt="Logo Departamentul pentru Situații de Urgență"
+              width={70}
+              height={70}
+            />
           </Box>
           <Box
             sx={{
@@ -70,9 +77,7 @@ export default function SearchAppBar() {
               }}
             >
               <Link href="/">
-              <a>
-                data.fiipregătit.ro
-              </a>
+                <a>data.fiipregătit.ro</a>
               </Link>
             </Typography>
             <Typography
@@ -94,17 +99,32 @@ export default function SearchAppBar() {
               sx={{ alignContent: "center", mr: 3, mb: "-46px" }}
             >
               <Link href="/">
-                <a className={clsx(styles.navItem, router.pathname === "/" && styles.navItemActive)}>
+                <a
+                  className={clsx(
+                    styles.navItem,
+                    router.pathname === "/" && styles.navItemActive
+                  )}
+                >
                   <HomeIcon />
                 </a>
               </Link>
               <Link href="/despre">
-                <a className={clsx(styles.navItem, router.pathname === "/despre" && styles.navItemActive)}>
+                <a
+                  className={clsx(
+                    styles.navItem,
+                    router.pathname === "/despre" && styles.navItemActive
+                  )}
+                >
                   Despre
                 </a>
               </Link>
               <Link href="/harta">
-                <a className={clsx(styles.navItem, router.pathname === "/harta" && styles.navItemActive)}>
+                <a
+                  className={clsx(
+                    styles.navItem,
+                    router.pathname === "/harta" && styles.navItemActive
+                  )}
+                >
                   Hartă
                 </a>
               </Link>

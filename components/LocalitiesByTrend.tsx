@@ -1,12 +1,10 @@
-import {
-  Box,
-  Grid,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Grid, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/system";
 import React, { CSSProperties, useCallback, useEffect, useState } from "react";
 import { ByTrendResponse, Trend } from "../pages/api/byTrend";
-import { LocalityWithFeature, LocalityWithFeatureAndHospitals } from "../types/Locality";
+import {
+  LocalityWithFeatureAndHospitals,
+} from "../types/Locality";
 import LocalitySummaryWidget from "./LocalitySummaryWidget";
 import SkeletonCard from "./SkeletonCard";
 
@@ -16,7 +14,9 @@ type Props = {
 };
 
 export default function LocalitiesByTrend({ trend, ...rest }: Props) {
-  const [localities, setLocalities] = useState<LocalityWithFeatureAndHospitals[]>([]);
+  const [localities, setLocalities] = useState<
+    LocalityWithFeatureAndHospitals[]
+  >([]);
 
   const theme = useTheme();
   const downMid = useMediaQuery(theme.breakpoints.down("md"));
@@ -24,10 +24,8 @@ export default function LocalitiesByTrend({ trend, ...rest }: Props) {
   const limit = downMid ? 2 : 3;
 
   const fetchData = useCallback(async () => {
-    const response = await fetch(
-      `/api/byTrend?trend=${trend}&limit=${limit}`
-    );
-    const json = await response.json() as ByTrendResponse;
+    const response = await fetch(`/api/byTrend?trend=${trend}&limit=${limit}`);
+    const json = (await response.json()) as ByTrendResponse;
     setLocalities(json.uats);
   }, [localities, trend, limit]);
 

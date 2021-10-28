@@ -1,10 +1,27 @@
-import { faMapPin, faHeadSideCough, faSyringe, faBed } from "@fortawesome/free-solid-svg-icons";
+import {
+  faMapPin,
+  faHeadSideCough,
+  faSyringe,
+  faBed,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Card, CardHeader, Avatar, CardContent, List, ListItem, ListItemAvatar, ListItemText, Divider } from "@mui/material";
+import {
+  Card,
+  CardHeader,
+  Avatar,
+  CardContent,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Divider,
+} from "@mui/material";
 import React from "react";
 import { HoverInfo, HoverInfoCounty, HoverInfoUAT } from "./CovidMap";
 
-export default function FeatureMapHovercard(hoverInfo?: HoverInfo<HoverInfoCounty | HoverInfoUAT>) {
+export default function FeatureMapHovercard(
+  hoverInfo?: HoverInfo<HoverInfoCounty | HoverInfoUAT>
+) {
   if (!hoverInfo?.object) {
     return null;
   }

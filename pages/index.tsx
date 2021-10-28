@@ -30,12 +30,16 @@ import {
   fetchNationalSummary,
   NationalSummary,
 } from "../server/fetchNationalSummary";
-import NationalSummaryCard from "../components/NationaSummaryCard";
+import NationalSummaryCard from "../components/NationalSummaryCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBed, faHeadSideCough, faViruses, faVirusSlash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBed,
+  faHeadSideCough,
+  faViruses,
+  faVirusSlash,
+} from "@fortawesome/free-solid-svg-icons";
 
 const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
-  ssr: false,
   loading: () => <Skeleton height="100%" />,
 });
 
@@ -85,7 +89,12 @@ const Home: NextPage = (
         <Grid
           container
           justifyContent="center"
-          sx={{ background: "#efefef", p: theme.spacing(6), pt: 0, mt: theme.spacing(6) }}
+          sx={{
+            background: "#efefef",
+            p: theme.spacing(6),
+            pt: 0,
+            mt: theme.spacing(6),
+          }}
         >
           <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
             <Grid container sx={{ margin: `${theme.spacing(8)} auto` }}>
@@ -252,9 +261,15 @@ type ServerSideProps =
       notFound: true;
     };
 
-export const getServerSideProps: GetServerSideProps = async (
-  context
-): Promise<ServerSideProps> => {
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  res,
+}): Promise<ServerSideProps> => {
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=3600, stale-while-revalidate=7200"
+  );
+
   const summary = await fetchNationalSummary();
   return {
     props: {
