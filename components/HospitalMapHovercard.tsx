@@ -1,5 +1,5 @@
 import {
-  CoronavirusOutlined,
+  AirlineSeatFlatOutlined,
   HealthAndSafetyOutlined,
   Room,
 } from "@mui/icons-material";
@@ -56,7 +56,7 @@ export default function FeatureMapHovercard(hoverInfo?: HoverInfo<Hospital>) {
           <ListItem alignItems="flex-start" disablePadding>
             <ListItemAvatar>
               <Avatar>
-                <CoronavirusOutlined />
+                <HealthAndSafetyOutlined />
               </Avatar>
             </ListItemAvatar>
             <ListItemText
@@ -68,7 +68,7 @@ export default function FeatureMapHovercard(hoverInfo?: HoverInfo<Hospital>) {
           <ListItem alignItems="flex-start" disablePadding>
             <ListItemAvatar>
               <Avatar>
-                <HealthAndSafetyOutlined />
+                <AirlineSeatFlatOutlined />
               </Avatar>
             </ListItemAvatar>
             <ListItemText
