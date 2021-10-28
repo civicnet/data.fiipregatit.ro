@@ -208,7 +208,7 @@ export default function Footer(props: any) {
         }}
       >
         <Grid item xs={11} sm={10} md={9} xl={6}>
-          <Grid container justifyContent="center" className={classes.list}>
+          <Grid container justifyContent="space-between" className={classes.list}>
             <Grid
               item
               sx={{ display: "flex", mt: { xs: theme.spacing(4) } }}

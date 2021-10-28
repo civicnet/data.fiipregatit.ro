@@ -166,8 +166,8 @@ export default function NationalSummaryCard({
         </Box>
         <List dense={true}>
           <ListItem>
-            {data.map((d) => {
-              return <ListItemText primary={d.subtext} secondary={d.main} />;
+            {data.map((d, idx) => {
+              return <ListItemText primary={d.subtext} secondary={d.main} key={`list-item-${idx}`}/>;
             })}
           </ListItem>
         </List>
