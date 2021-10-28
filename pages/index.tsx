@@ -31,6 +31,8 @@ import {
   NationalSummary,
 } from "../server/fetchNationalSummary";
 import NationalSummaryCard from "../components/NationaSummaryCard";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBed, faHeadSideCough, faViruses, faVirusSlash } from "@fortawesome/free-solid-svg-icons";
 
 const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
   ssr: false,
@@ -94,6 +96,7 @@ const Home: NextPage = (
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} lg={4}>
                 <NationalSummaryCard
+                  icon={<FontAwesomeIcon icon={faViruses} />}
                   main={`${formatNumber(summary.infection.rate)}‰`}
                   trend={Trend.UP}
                   series={summary.infection.data}
@@ -110,6 +113,7 @@ const Home: NextPage = (
               </Grid>
               <Grid item xs={12} sm={6} lg={4}>
                 <NationalSummaryCard
+                  icon={<FontAwesomeIcon icon={faVirusSlash} />}
                   main={`${formatNumber(summary.vaccination.rate)}%`}
                   trend={Trend.UP}
                   series={summary.vaccination.data}
@@ -124,6 +128,7 @@ const Home: NextPage = (
               </Grid>
               <Grid item xs={12} sm={6} lg={4}>
                 <NationalSummaryCard
+                  icon={<FontAwesomeIcon icon={faBed} />}
                   main={`${formatNumber(100 - summary.icu.availability)}%`}
                   trend={Trend.DOWN}
                   series={summary.icu.data}
@@ -138,6 +143,7 @@ const Home: NextPage = (
               </Grid>
               <Grid item xs={12} sm={6} lg={4}>
                 <NationalSummaryCard
+                  icon={<FontAwesomeIcon icon={faHeadSideCough} />}
                   main={`${formatNumber(summary.cases.current)}`}
                   trend={Trend.DOWN}
                   series={summary.cases.data}

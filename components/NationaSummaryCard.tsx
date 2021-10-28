@@ -35,7 +35,7 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { id } from "common-tags";
-import React from "react";
+import React, { ReactNode } from "react";
 import { SeverityLevel } from "../lib/SeverityLevel";
 import { SeverityLevelColor } from "../lib/SeverityLevelColor";
 import { Trend } from "../pages/api/byTrend";
@@ -43,6 +43,7 @@ import SimpleLineChart from "./SimpleLineChart";
 import TrendArrow from "./TrendArrow";
 
 type Props = {
+  icon?: ReactNode;
   main: string;
   title: string;
   trend: Trend;
@@ -59,6 +60,7 @@ export default function NationalSummaryCard({
   trend,
   series,
   data,
+  icon,
   ...rest
 }: Props) {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
@@ -81,7 +83,7 @@ export default function NationalSummaryCard({
       <CardHeader
         avatar={
           <Avatar aria-label="recipe">
-            <Room />
+            {icon || <Room />}
           </Avatar>
         }
         action={
