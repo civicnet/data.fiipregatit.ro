@@ -79,7 +79,6 @@ export default function CovidMap({
   const [selectedLayer, setSelectedLayer] = useState(layer);
   const [layersData, setLayersData] = useState<Layers>();
   const [hospitals, setHospitalData] = useState<Hospital[]>();
-  const [icuRange, setICURange] = useState<[number, number]>();
   const [filteredHospitals, setFilteredHospitals] = useState(
     Object.keys(SeverityLevel)
   );
@@ -117,7 +116,6 @@ export default function CovidMap({
     setHospitalData(hospitalDataResponse.hospitals);
 
     const { minICU, maxICU } = hospitalDataResponse.statistics;
-    setICURange([minICU, maxICU]);
   }, [siruta, county]);
 
   useEffect(() => {
@@ -360,9 +358,7 @@ export default function CovidMap({
     }),
     new ScatterplotLayer({
       id: "hospitals-icu-scatterplot-layer",
-      data: hospitals.filter((h) =>
-        filteredHospitals.includes(severityForHospital(h))
-      ),
+      data: hospitals,
       pickable: true,
       opacity: 1,
       stroked: true,
@@ -379,6 +375,10 @@ export default function CovidMap({
       lineWidthMinPixels: 2,
       visible: selectedLayer === CovidMapLayers.HOSPITALS,
       onHover: (info: HoverInfo<Hospital>) => setProjectedHoverInfo(info),
+      updateTriggers: {
+        getFillColor: [filteredHospitals],
+        getLineColor: [filteredHospitals],
+      },
     }),
   ];
 
