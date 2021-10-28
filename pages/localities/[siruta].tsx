@@ -57,7 +57,7 @@ const LocalityPage: NextPage = ({
 
   return (
     <div>
-      <Head />
+      <Head title={`${locality.uat} | data.fiipregătit.ro`} />
       <Header />
       <main>
         <Grid container justifyContent="center">
