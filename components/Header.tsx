@@ -9,11 +9,8 @@ export default function Header() {
       <SearchAppBar />
       <Box
         sx={{
-          background: `
-            linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), 
-            radial-gradient(at top center, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.40) 120%) #989898
-          `,
-          backgroundBlendMode: "multiply,multiply",
+          background: `linear-gradient(to bottom, #323232 0%, #3F3F3F 40%, #1C1C1C 150%), linear-gradient(to top, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.25) 200%)`,
+          backgroundBlendMode: `multiply`,
           height: 150,
           width: "100%",
           backgroundSize: "cover",
@@ -22,16 +19,6 @@ export default function Header() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          "&:before": {
-            content: `" "`,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0, 0, 0, .7)",
-            display: "block",
-            position: "absolute",
-            top: 0,
-            left: 0,
-          },
         }}
       >
         <SearchInput />
