@@ -248,7 +248,7 @@ export default function Footer(props: any) {
               lg={4}
             >
               <Box sx={{ mr: 2, alignSelf: "center" }}>
-                <Image src={IGSU} height="150" width="80" />
+                <Image src={IGSU} />
               </Box>
               <Typography
                 variant="h4"
