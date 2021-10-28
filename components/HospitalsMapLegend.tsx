@@ -92,8 +92,8 @@ export default function FeatureMapLegend({
             </ExpandMore>
           </ListItemSecondaryAction>
         </ListItem>
-        <Divider />
         <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <Divider />
           <ListItem sx={{ pl: 0, pb: 2 }}>
             <ListItemText primary="Persoane spitalizate la ATI" />
           </ListItem>
