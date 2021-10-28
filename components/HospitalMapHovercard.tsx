@@ -1,9 +1,8 @@
 import {
-  faHeadSideCough,
-  faSyringe,
-  faHospitalAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+  CoronavirusOutlined,
+  HealthAndSafetyOutlined,
+  Room,
+} from "@mui/icons-material";
 import {
   Card,
   CardHeader,
@@ -46,7 +45,7 @@ export default function FeatureMapHovercard(hoverInfo?: HoverInfo<Hospital>) {
       <CardHeader
         avatar={
           <Avatar>
-            <FontAwesomeIcon icon={faHospitalAlt} />
+            <Room />
           </Avatar>
         }
         title={hoverInfo.object.name}
@@ -57,7 +56,7 @@ export default function FeatureMapHovercard(hoverInfo?: HoverInfo<Hospital>) {
           <ListItem alignItems="flex-start" disablePadding>
             <ListItemAvatar>
               <Avatar>
-                <FontAwesomeIcon icon={faHeadSideCough} />
+                <CoronavirusOutlined />
               </Avatar>
             </ListItemAvatar>
             <ListItemText
@@ -69,7 +68,7 @@ export default function FeatureMapHovercard(hoverInfo?: HoverInfo<Hospital>) {
           <ListItem alignItems="flex-start" disablePadding>
             <ListItemAvatar>
               <Avatar>
-                <FontAwesomeIcon icon={faSyringe} />
+                <HealthAndSafetyOutlined />
               </Avatar>
             </ListItemAvatar>
             <ListItemText

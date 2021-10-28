@@ -22,12 +22,6 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHospitalSymbol,
-  faTh,
-  faThLarge,
-} from "@fortawesome/free-solid-svg-icons";
 import centroid from "@turf/centroid";
 import { SeverityLevel } from "../lib/SeverityLevel";
 import { Hospital } from "../pages/api/hospitals";
@@ -37,6 +31,7 @@ import HospitalMapHovercard from "./HospitalMapHovercard";
 import FeatureMapLegend from "./FeatureMapLegend";
 import HospitalsMapLegend from "./HospitalsMapLegend";
 import { getNewestNonStaleData } from "../lib/getNewestNonStaleData";
+import { GridOnOutlined, ScatterPlotOutlined, WindowOutlined } from "@mui/icons-material";
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -437,7 +432,7 @@ export default function CovidMap({
               aria-label="left aligned"
               selected={selectedLayer === CovidMapLayers.UATS}
             >
-              <FontAwesomeIcon icon={faTh} />
+              <GridOnOutlined />
             </ToggleButton>
           </Tooltip>
           <Tooltip title="Vezi județe">
@@ -446,7 +441,7 @@ export default function CovidMap({
               aria-label="centered"
               selected={selectedLayer === CovidMapLayers.COUNTIES}
             >
-              <FontAwesomeIcon icon={faThLarge} />
+              <WindowOutlined />
             </ToggleButton>
           </Tooltip>
           <Tooltip title="Vezi spitale (în funcție de paturi ATI ocupate)">
@@ -455,7 +450,7 @@ export default function CovidMap({
               aria-label="centered"
               selected={selectedLayer === CovidMapLayers.HOSPITALS}
             >
-              <FontAwesomeIcon icon={faHospitalSymbol} />
+              <ScatterPlotOutlined />
             </ToggleButton>
           </Tooltip>
         </ToggleButtonGroup>

@@ -1,10 +1,11 @@
 import {
-  faHeart,
-  faCoffee,
-  faHandPaper,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FacebookOutlined, Instagram, YouTube } from "@mui/icons-material";
+  CoffeeOutlined,
+  FacebookOutlined,
+  FavoriteOutlined,
+  Instagram,
+  VolunteerActivismOutlined,
+  YouTube,
+} from "@mui/icons-material";
 import { Box, Grid, Link, Typography, useTheme } from "@mui/material";
 import React from "react";
 import classes from "./Footer.module.css";
@@ -248,7 +249,7 @@ export default function Footer(props: any) {
               lg={4}
             >
               <Box sx={{ mr: 2, alignSelf: "center" }}>
-                <Image src={IGSU} />
+                <Image src={IGSU} width={101}  height={150} />
               </Box>
               <Typography
                 variant="h4"
@@ -277,15 +278,15 @@ export default function Footer(props: any) {
               }}
             >
               <Box sx={{ alignSelf: "center" }}>
-                <Typography sx={{ color: "#bbb", fontSize: "12px" }}>
+                <Typography sx={{ color: "#bbb", fontSize: "12px", display: "flex" }}>
                   Creat cu{" "}
                   <Typography
                     sx={{ "&:hover": { color: "#f00" } }}
                     component="span"
                   >
-                    <FontAwesomeIcon icon={faHeart} />
+                    <FavoriteOutlined fontSize="small" sx={{ mr: 1, ml: 1 }}/>
                   </Typography>{" "}
-                  și <FontAwesomeIcon icon={faCoffee} /> de
+                  și <CoffeeOutlined fontSize="small"  sx={{ mr: 1, ml: 1 }}/> de
                 </Typography>
                 <Image src={CivicNet} width="150" height="50" />
                 <Typography
@@ -298,11 +299,9 @@ export default function Footer(props: any) {
                   <a
                     href="https://www.paypal.com/donate/?cmd=_s-xclick&hosted_button_id=DE43VS64MPJB8&source=url"
                     target="_blank"
+                    style={{ display: "flex" }}
                   >
-                    <FontAwesomeIcon
-                      icon={faHandPaper}
-                      style={{ marginRight: theme.spacing(1) }}
-                    />
+                    <VolunteerActivismOutlined fontSize="small" sx={{ mr: 1 }} />
                     Contribuie și tu
                   </a>
                 </Typography>

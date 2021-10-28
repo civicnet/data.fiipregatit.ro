@@ -1,10 +1,4 @@
-import {
-  faMapPin,
-  faHeadSideCough,
-  faSyringe,
-  faBed,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AirlineSeatFlatOutlined, CoronavirusOutlined, HealthAndSafetyOutlined, Room } from "@mui/icons-material";
 import {
   Card,
   CardHeader,
@@ -38,7 +32,7 @@ export default function FeatureMapHovercard(
       <CardHeader
         avatar={
           <Avatar>
-            <FontAwesomeIcon icon={faMapPin} />
+            <Room />
           </Avatar>
         }
         title={hoverInfo.object.properties.name}
@@ -53,7 +47,7 @@ export default function FeatureMapHovercard(
           <ListItem alignItems="flex-start" disablePadding>
             <ListItemAvatar>
               <Avatar>
-                <FontAwesomeIcon icon={faHeadSideCough} />
+                <CoronavirusOutlined />
               </Avatar>
             </ListItemAvatar>
             <ListItemText
@@ -65,7 +59,7 @@ export default function FeatureMapHovercard(
           <ListItem alignItems="flex-start" disablePadding>
             <ListItemAvatar>
               <Avatar>
-                <FontAwesomeIcon icon={faSyringe} />
+                <HealthAndSafetyOutlined />
               </Avatar>
             </ListItemAvatar>
             <ListItemText primary="Rata de vaccinare" secondary="35%" />
@@ -74,7 +68,7 @@ export default function FeatureMapHovercard(
           <ListItem alignItems="flex-start" disablePadding>
             <ListItemAvatar>
               <Avatar>
-                <FontAwesomeIcon icon={faBed} />
+                <AirlineSeatFlatOutlined />
               </Avatar>
             </ListItemAvatar>
             <ListItemText primary="Paturi ATI disponibile" secondary={1} />

@@ -19,7 +19,12 @@ import LocalitiesByIncidence from "../components/LocalitiesByIncidence";
 import { SxProps } from "@mui/system";
 import dynamic from "next/dynamic";
 import { CovidMapLayers } from "../components/CovidMap";
-import { ArrowRight } from "@mui/icons-material";
+import {
+  AirlineSeatFlatOutlined,
+  ArrowRight,
+  CoronavirusOutlined,
+  HealthAndSafetyOutlined,
+} from "@mui/icons-material";
 import Header from "../components/Header";
 import TrackedLocalitiesCTA from "../components/TrackedLocalitiesCTA";
 import Headline from "../components/Headline";
@@ -31,13 +36,6 @@ import {
   NationalSummary,
 } from "../server/fetchNationalSummary";
 import NationalSummaryCard from "../components/NationalSummaryCard";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBed,
-  faHeadSideCough,
-  faViruses,
-  faVirusSlash,
-} from "@fortawesome/free-solid-svg-icons";
 
 const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
   loading: () => <Skeleton height="100%" />,
@@ -105,7 +103,7 @@ const Home: NextPage = (
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} lg={4}>
                 <NationalSummaryCard
-                  icon={<FontAwesomeIcon icon={faViruses} />}
+                  icon={<CoronavirusOutlined />}
                   main={`${formatNumber(summary.infection.rate)}‰`}
                   trend={Trend.UP}
                   series={summary.infection.data}
@@ -122,7 +120,7 @@ const Home: NextPage = (
               </Grid>
               <Grid item xs={12} sm={6} lg={4}>
                 <NationalSummaryCard
-                  icon={<FontAwesomeIcon icon={faVirusSlash} />}
+                  icon={<HealthAndSafetyOutlined />}
                   main={`${formatNumber(summary.vaccination.rate)}%`}
                   trend={Trend.UP}
                   series={summary.vaccination.data}
@@ -137,7 +135,7 @@ const Home: NextPage = (
               </Grid>
               <Grid item xs={12} sm={6} lg={4}>
                 <NationalSummaryCard
-                  icon={<FontAwesomeIcon icon={faBed} />}
+                  icon={<AirlineSeatFlatOutlined />}
                   main={`${formatNumber(100 - summary.icu.availability)}%`}
                   trend={Trend.DOWN}
                   series={summary.icu.data}
@@ -152,7 +150,7 @@ const Home: NextPage = (
               </Grid>
               <Grid item xs={12} sm={6} lg={4}>
                 <NationalSummaryCard
-                  icon={<FontAwesomeIcon icon={faHeadSideCough} />}
+                  icon={<CoronavirusOutlined />}
                   main={`${formatNumber(summary.cases.current)}`}
                   trend={Trend.DOWN}
                   series={summary.cases.data}
