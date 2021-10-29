@@ -9,11 +9,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import type {
-  GetServerSideProps,
-  InferGetServerSidePropsType,
-  NextPage,
-} from "next";
+import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import React from "react";
 import { Head } from "../../components/Head";
 import LocalitySummaryWidget from "../../components/LocalitySummaryWidget";
@@ -46,7 +42,7 @@ const LocalityPage: NextPage = ({
   locality,
   coords,
   content,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -161,23 +157,23 @@ type ServerSideProps =
         coords: Feature<Point, Properties>;
         content: ServerSideContent[];
       };
+      revalidate: number;
     }
   | {
       notFound: true;
     };
 
-export const getServerSideProps: GetServerSideProps = async ({
-  req,
-  res,
+export const getStaticProps: GetStaticProps = async ({
+  /* req,
+  res, */
   params,
 }): Promise<ServerSideProps> => {
-  res.setHeader(
+  /* res.setHeader(
     "Cache-Control",
     "public, s-maxage=3600, stale-while-revalidate=7200"
-  );
+  ); */
 
   const siruta = params?.siruta;
-
   if (!siruta || typeof siruta !== "string") {
     return {
       notFound: true,
@@ -220,5 +216,10 @@ export const getServerSideProps: GetServerSideProps = async ({
       coords: centroid,
       content: content.filter((c) => c !== undefined) as ServerSideContent[],
     },
+    revalidate: 60 * 60,
   };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return { paths: [], fallback: "blocking" };
 };

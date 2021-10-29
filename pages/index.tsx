@@ -7,11 +7,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import type {
-  GetServerSideProps,
-  InferGetServerSidePropsType,
-  NextPage,
-} from "next";
+import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import React from "react";
 import styles from "../styles/Home.module.css";
 import { Head } from "../components/Head";
@@ -42,7 +38,7 @@ const DynamicCovidMap = dynamic(() => import("../components/CovidMap"), {
 });
 
 const Home: NextPage = (
-  props: InferGetServerSidePropsType<typeof getServerSideProps>
+  props: InferGetStaticPropsType<typeof getStaticProps>
 ) => {
   const theme = useTheme();
 
@@ -254,24 +250,28 @@ type ServerSideProps =
       props: {
         summary: NationalSummary;
       };
+      revalidate: number;
     }
   | {
       notFound: true;
     };
 
-export const getServerSideProps: GetServerSideProps = async ({
-  req,
-  res,
-}): Promise<ServerSideProps> => {
-  res.setHeader(
+export const getStaticProps: GetStaticProps = async (
+  {
+    /* req,
+  res, */
+  }
+): Promise<ServerSideProps> => {
+  /* res.setHeader(
     "Cache-Control",
     "public, s-maxage=3600, stale-while-revalidate=7200"
-  );
+  ); */
 
   const summary = await fetchNationalSummary();
   return {
     props: {
       summary,
     },
+    revalidate: 60 * 60,
   };
 };
