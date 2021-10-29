@@ -38,6 +38,7 @@ import MarkdownContent from "../../components/MarkdownContent";
 import { ExpandMore } from "@mui/icons-material";
 import classes from "./siruta.module.css";
 import { useRouter } from "next/router";
+import LocalityExpandedSummaryWidget from "../../components/LocalityExpandedSummaryWidget";
 
 const fsp = fs.promises;
 
@@ -80,7 +81,7 @@ const LocalityPage: NextPage = ({
             )}
             <Grid container justifyContent="space-between" spacing={2}>
               <Grid item xs={12} md={4}>
-                <LocalitySummaryWidget locality={locality} />
+                <LocalityExpandedSummaryWidget locality={locality} />
               </Grid>
 
               <Grid item xs={12} md={8}>
@@ -126,7 +127,7 @@ const LocalityPage: NextPage = ({
                     <Box
                       sx={{
                         width: "100%",
-                        height: "400px",
+                        height: "650px",
                         position: "relative",
                       }}
                     >
@@ -186,15 +187,8 @@ type ServerSideProps =
     };
 
 export const getStaticProps: GetStaticProps = async ({
-  /* req,
-  res, */
   params,
 }): Promise<ServerSideProps> => {
-  /* res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=3600, stale-while-revalidate=7200"
-  ); */
-
   const siruta = params?.siruta;
   if (!siruta || typeof siruta !== "string") {
     return {
@@ -244,7 +238,9 @@ export const getStaticProps: GetStaticProps = async ({
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const localities = await import("../../data/octombrie.json");
-  const paths = localities.default.map((l) => ({ params: { siruta: l.siruta } }));
+  const paths = localities.default.map((l) => ({
+    params: { siruta: l.siruta },
+  }));
 
   return { paths, fallback: "blocking" };
 };

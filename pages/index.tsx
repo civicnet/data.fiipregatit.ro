@@ -256,22 +256,13 @@ type ServerSideProps =
       notFound: true;
     };
 
-export const getStaticProps: GetStaticProps = async (
-  {
-    /* req,
-  res, */
-  }
-): Promise<ServerSideProps> => {
-  /* res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=3600, stale-while-revalidate=7200"
-  ); */
-
-  const summary = await fetchNationalSummary();
-  return {
-    props: {
-      summary,
-    },
-    revalidate: 60 * 60,
+export const getStaticProps: GetStaticProps =
+  async ({}): Promise<ServerSideProps> => {
+    const summary = await fetchNationalSummary();
+    return {
+      props: {
+        summary,
+      },
+      revalidate: 60 * 60,
+    };
   };
-};
