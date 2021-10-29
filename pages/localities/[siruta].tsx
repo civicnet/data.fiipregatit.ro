@@ -3,13 +3,19 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  CircularProgress,
   Grid,
   Skeleton,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
+import type {
+  GetStaticPaths,
+  GetStaticProps,
+  InferGetStaticPropsType,
+  NextPage,
+} from "next";
 import React from "react";
 import { Head } from "../../components/Head";
 import LocalitySummaryWidget from "../../components/LocalitySummaryWidget";
@@ -31,6 +37,7 @@ import matter from "gray-matter";
 import MarkdownContent from "../../components/MarkdownContent";
 import { ExpandMore } from "@mui/icons-material";
 import classes from "./siruta.module.css";
+import { useRouter } from "next/router";
 
 const fsp = fs.promises;
 
@@ -44,7 +51,22 @@ const LocalityPage: NextPage = ({
   content,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const theme = useTheme();
+  const router = useRouter();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
+
+  if (router.isFallback) {
+    return (
+      <div>
+        <Head title={`... | data.fiipregătit.ro`} />
+        <Header />
+        <main>
+          <Grid container justifyContent="center">
+            <CircularProgress sx={{ mt: 6 }} />
+          </Grid>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -221,5 +243,8 @@ export const getStaticProps: GetStaticProps = async ({
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  return { paths: [], fallback: "blocking" };
+  const localities = await import("../../data/octombrie.json");
+  const paths = localities.default.map((l) => ({ params: { siruta: l.siruta } }));
+
+  return { paths, fallback: "blocking" };
 };
