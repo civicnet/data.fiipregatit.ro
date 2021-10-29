@@ -68,7 +68,7 @@ const LocalityPage: NextPage = ({
               <Grid item xs={12} md={8}>
                 {(content as ServerSideContent[]).map((c, idx) => {
                   return (
-                    <Accordion key={`accordion-${idx}`}>
+                    <Accordion key={`accordion-${idx}`} variant="outlined">
                       <AccordionSummary
                         expandIcon={<ExpandMore />}
                         aria-controls={`panel1a-content-${idx}`}
