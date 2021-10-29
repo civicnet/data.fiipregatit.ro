@@ -18,7 +18,6 @@ import type {
 } from "next";
 import React from "react";
 import { Head } from "../../components/Head";
-import LocalitySummaryWidget from "../../components/LocalitySummaryWidget";
 import { LocalityWithFeatureAndHospitals } from "../../types/Locality";
 import { labelForLocality } from "../../lib/labelForLocality";
 import Header from "../../components/Header";

@@ -1,17 +1,8 @@
-import {
-  Box,
-  Button,
-  Grid,
-  Skeleton,
-  Theme,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Box, Button, Grid, Skeleton, Theme, useTheme } from "@mui/material";
 import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import React from "react";
 import styles from "../styles/Home.module.css";
 import { Head } from "../components/Head";
-import LocalitiesByIncidence from "../components/LocalitiesByIncidence";
 import { SxProps } from "@mui/system";
 import dynamic from "next/dynamic";
 import { CovidMapLayers } from "../components/CovidMap";
@@ -25,7 +16,6 @@ import Header from "../components/Header";
 import TrackedLocalitiesCTA from "../components/TrackedLocalitiesCTA";
 import Headline from "../components/Headline";
 import Footer from "../components/Footer";
-import LocalitiesByTrend from "../components/LocalitiesByTrend";
 import { Trend } from "./api/byTrend";
 import {
   fetchNationalSummary,
@@ -186,53 +176,6 @@ const Home: NextPage = (
                 >
                   Vezi harta
                 </Button>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid
-          container
-          justifyContent="center"
-          sx={{ background: "#efefef", mt: theme.spacing(6) }}
-        >
-          <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
-            <Grid container sx={{ margin: `${theme.spacing(8)} auto` }}>
-              <Grid item xs={12}>
-                <Typography variant="h1" sx={headlineSx}>
-                  Localități în scădere
-                </Typography>
-                <LocalitiesByTrend trend={Trend.DOWN} />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid container justifyContent="center">
-          <Grid item xs={11} sm={10} md={9} lg={8} xl={6}>
-            <Grid container sx={{ margin: `${theme.spacing(8)} auto` }}>
-              <Grid item xs={12}>
-                <Typography variant="h1" sx={headlineSx}>
-                  Situația la nivel național
-                </Typography>
-                <LocalitiesByIncidence
-                  low={7.5}
-                  high={1000}
-                  style={byIncidentStyles}
-                />
-                <LocalitiesByIncidence
-                  low={6}
-                  high={7.5}
-                  style={byIncidentStyles}
-                />
-                <LocalitiesByIncidence
-                  low={3}
-                  high={6}
-                  style={byIncidentStyles}
-                />
-                <LocalitiesByIncidence
-                  low={0}
-                  high={3}
-                  style={byIncidentStyles}
-                />
               </Grid>
             </Grid>
           </Grid>
