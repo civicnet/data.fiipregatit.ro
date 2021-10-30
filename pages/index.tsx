@@ -1,9 +1,8 @@
-import { Box, Button, Grid, Skeleton, Theme, useTheme } from "@mui/material";
+import { Box, Button, Grid, Skeleton, useTheme } from "@mui/material";
 import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import React from "react";
 import styles from "../styles/Home.module.css";
 import { Head } from "../components/Head";
-import { SxProps } from "@mui/system";
 import dynamic from "next/dynamic";
 import { CovidMapLayers } from "../components/CovidMap";
 import {
@@ -31,26 +30,6 @@ const Home: NextPage = (
   props: InferGetStaticPropsType<typeof getStaticProps>
 ) => {
   const theme = useTheme();
-
-  const headlineSx: SxProps<Theme> = {
-    textTransform: "uppercase",
-    textAlign: "center",
-    fontSize: "2rem",
-    mt: theme.spacing(6),
-    mb: theme.spacing(8),
-    "&:after": {
-      content: `" "`,
-      display: "block",
-      borderBottom: `5px solid ${theme.palette.primary.main}`,
-      width: "100px",
-      margin: "25px auto 15px",
-    },
-  };
-
-  const byIncidentStyles = {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-  };
 
   const summary: NationalSummary = props.summary;
 
